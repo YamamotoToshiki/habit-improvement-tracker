@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="習慣改善トラッカー - 行動科学に基づいた習慣形成支援アプリ">
+    <title>習慣改善トラッカー</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+
+    <!-- Chart.js & Plugins -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <!-- Note: chartjs-chart-error-bars v4 might need specific handling or a different CDN depending on module support, 
+         using a standard unpkg link for now. If it fails, we might need to adjust. -->
+    <script src="https://unpkg.com/chartjs-chart-error-bars@4.1.0/build/index.umd.min.js"></script>
+
+    <!-- Regression.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+    <!-- 4.1.1 共通ヘッダー -->
+    <header id="app-header">
+        <div class="header-container">
+            <h1 class="app-title">習慣改善トラッカー</h1>
+            <nav class="main-nav">
+                <button id="nav-settings" class="nav-btn" data-target="view-settings">実験設定</button>
+                <button id="nav-record" class="nav-btn" data-target="view-record">日次記録</button>
+                <button id="nav-results" class="nav-btn" data-target="view-results">結果表示</button>
+                <button id="nav-library" class="nav-btn" data-target="view-library">介入策ライブラリ</button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="app-main">
+        <!-- Loading View -->
+        <section id="view-loading" class="view-section">
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+        </section>
+
+        <!-- 4.1.2 実験設定画面 -->
+        <section id="view-settings" class="view-section hidden">
+            <div class="container">
+                <h2>実験設定</h2>
+                <form id="form-settings">
+                    <div class="form-group">
+                        <label for="setting-strategy" class="required">介入策選択</label>
+                        <select id="setting-strategy" name="strategy">
+                            <option value="環境の整備">環境の整備</option>
+                            <option value="開始コストの低下">開始コストの低下</option>
+                            <option value="予めの意思決定">予めの意思決定</option>
+                            <option value="即時報酬の導入">即時報酬の導入</option>
+                            <option value="自己イメージの形成">自己イメージの形成</option>
+                            <option value="（その他）">（その他）</option>
+                        </select>
+                    </div>
+
+                    <div id="view-settings-custom" class="disabled-section">
+                        <div class="form-group">
+                            <label for="setting-strategy-custom" class="required">介入策入力（その他選択時）</label>
+                            <input type="text" id="setting-strategy-custom" name="strategyCustom" maxlength="50"
+                                disabled placeholder="最大50文字">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="setting-action" class="required">具体的行動</label>
+                        <textarea id="setting-action" name="action" maxlength="2000" rows="4"
+                            placeholder="最大2,000文字"></textarea>
+                        <div class="char-count"><span id="action-char-count">0</span> / 2,000</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="setting-duration" class="required">実験期間（日）</label>
+                        <input type="number" id="setting-duration" name="duration" min="1" max="90" value="14">
+                        <span class="tooltip">推奨期間：14日～28日</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="setting-notification" class="required">通知時刻</label>
+                        <input type="time" id="setting-notification" name="notificationTime" value="20:00">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="btn-save-experiment" class="btn-primary">保存</button>
+                        <button type="button" id="btn-end-experiment" class="btn-danger" disabled>実験終了</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 4.1.3 日次記録画面 -->
+        <section id="view-record" class="view-section hidden">
+            <div class="container">
+                <h2>日次記録</h2>
+                <div class="info-card">
+                    <p><strong>実験名:</strong> <span id="record-experiment-name">---</span></p>
+                    <p><strong>経過日数:</strong> <span id="record-days-elapsed">---</span>日目</p>
+                    <p><strong>日付:</strong> <span id="record-date">---</span></p>
+                </div>
+
+                <form id="form-record">
+                    <div class="form-group checkbox-group">
+                        <label for="record-carried-out">作業実施可否</label>
+                        <input type="checkbox" id="record-carried-out" name="carriedOut">
+                    </div>
+
+                    <div id="record-details-container" class="disabled-section">
+                        <div class="form-group">
+                            <label for="record-started-time" class="required">作業開始時間帯</label>
+                            <select id="record-started-time" name="startedTime" disabled>
+                                <option value="深夜">深夜 (0:00-2:59)</option>
+                                <option value="早朝">早朝 (3:00-5:59)</option>
+                                <option value="朝">朝 (6:00-8:59)</option>
+                                <option value="昼">昼 (9:00-14:59)</option>
+                                <option value="夕方">夕方 (15:00-17:59)</option>
+                                <option value="夜">夜 (18:00-23:59)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="record-duration" class="required">作業継続時間</label>
+                            <select id="record-duration" name="durationTime" disabled>
+                                <option value="5">5分</option>
+                                <option value="15">15分</option>
+                                <option value="30" selected>30分</option>
+                                <option value="60">1時間</option>
+                                <option value="180">3時間</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label for="record-interrupted">中断の有無</label>
+                            <input type="checkbox" id="record-interrupted" name="interrupted" disabled>
+                        </div>
+
+                        <div id="interruption-custom" class="disabled-section">
+                            <div class="form-group">
+                                <label for="record-interruption-reason">中断の主な理由</label>
+                                <input type="text" id="record-interruption-reason" name="interruptionReason"
+                                    maxlength="50" disabled placeholder="最大50文字">
+                            </div>
+                        </div>
+
+                        <div class="form-group slider-group">
+                            <label for="record-concentration" class="required">集中度 (1-5)</label>
+                            <input type="range" id="record-concentration" name="concentration" min="1" max="5" value="3"
+                                disabled>
+                            <span class="slider-value" id="val-concentration">3</span>
+                        </div>
+
+                        <div class="form-group slider-group">
+                            <label for="record-accomplishment" class="required">達成感 (1-5)</label>
+                            <input type="range" id="record-accomplishment" name="accomplishment" min="1" max="5"
+                                value="3" disabled>
+                            <span class="slider-value" id="val-accomplishment">3</span>
+                        </div>
+
+                        <div class="form-group slider-group">
+                            <label for="record-fatigue" class="required">疲労感 (1-5)</label>
+                            <input type="range" id="record-fatigue" name="fatigue" min="1" max="5" value="3" disabled>
+                            <span class="slider-value" id="val-fatigue">3</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="record-memo">メモ</label>
+                        <textarea id="record-memo" name="memo" maxlength="2000" rows="3"
+                            placeholder="最大2,000文字"></textarea>
+                        <div class="char-count"><span id="memo-char-count">0</span> / 2,000</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="btn-save-record" class="btn-primary">保存</button>
+                        <button type="button" id="btn-edit-record" class="btn-secondary" disabled>修正</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 4.1.4 結果表示画面 -->
+        <section id="view-results" class="view-section hidden">
+            <div class="container">
+                <div class="results-header">
+                    <h2>結果表示</h2>
+                    <button id="btn-calendar-toggle" class="icon-btn"><i class="fa-solid fa-calendar-days"></i></button>
+                </div>
+
+                <div class="form-group">
+                    <label for="result-experiment-select">実験選択</label>
+                    <select id="result-experiment-select"></select>
+                </div>
+
+                <div id="result-experiment-info" class="info-card">
+                    <p><strong>介入策:</strong> <span id="res-strategy">---</span></p>
+                    <p><strong>行動:</strong> <span id="res-action">---</span></p>
+                    <p><strong>期間:</strong> <span id="res-period">---</span></p>
+                    <p><strong>記録率:</strong> <span id="res-rate">---</span></p>
+                    <p><strong>状態:</strong> <span id="res-status">---</span></p>
+                </div>
+
+                <!-- Calendar Area (Hidden by default or toggled) -->
+                <div id="result-calendar-container" class="calendar-container hidden">
+                    <div id="calendar-placeholder"></div>
+                </div>
+
+                <!-- Graphs Accordion -->
+                <div class="charts-container">
+                    <!-- Graph 1 -->
+                    <details class="accordion-item">
+                        <summary class="accordion-header">
+                            グラフ1：集計期間全体の作業実施率
+                        </summary>
+                        <div id="chart-container-1" class="accordion-content">
+                            <canvas id="chart-1"></canvas>
+                        </div>
+                    </details>
+
+                    <!-- Graph 2 -->
+                    <details class="accordion-item">
+                        <summary class="accordion-header">
+                            グラフ2：日付ごとの作業継続時間の推移
+                        </summary>
+                        <div id="chart-container-2" class="accordion-content">
+                            <canvas id="chart-2"></canvas>
+                        </div>
+                    </details>
+
+                    <!-- Graph 3 -->
+                    <details class="accordion-item">
+                        <summary class="accordion-header">
+                            グラフ3：作業開始時間帯・中断率・集中度の相関
+                        </summary>
+                        <div id="chart-container-3" class="accordion-content">
+                            <canvas id="chart-3"></canvas>
+                        </div>
+                    </details>
+
+                    <!-- Graph 4 -->
+                    <details class="accordion-item">
+                        <summary class="accordion-header">
+                            グラフ4：作業開始時間帯・中断率・達成感の相関
+                        </summary>
+                        <div id="chart-container-4" class="accordion-content">
+                            <canvas id="chart-4"></canvas>
+                        </div>
+                    </details>
+
+                    <!-- Graph 5 -->
+                    <details class="accordion-item">
+                        <summary class="accordion-header">
+                            グラフ5：作業開始時間帯・中断率・疲労感の相関
+                        </summary>
+                        <div id="chart-container-5" class="accordion-content">
+                            <canvas id="chart-5"></canvas>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="export-section">
+                    <button id="btn-export-data" class="btn-secondary">データエクスポート</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4.1.5 介入策ライブラリ画面 -->
+        <section id="view-library" class="view-section hidden">
+            <div class="container">
+                <h2>介入策ライブラリ</h2>
+                <div class="library-list">
+                    <details class="library-item">
+                        <summary>環境の整備</summary>
+                        <p class="library-content">
+                            望ましい行動を取りやすく、望ましくない行動を取りにくくするように環境を調整する方法です。たとえば、「帰宅後すぐに作業用シャツに着替える」「机とベッドを視覚的に分離する」「作業専用のライトを使用する」などによって、作業空間と休息空間を明確に区別します。
+                        </p>
+                    </details>
+                    <details class="library-item">
+                        <summary>開始コストの低下</summary>
+                        <p class="library-content">
+                            行動を始める際のハードルを下げて、最初の一歩を踏み出しやすくする方法です。たとえば、「まず2分だけ机に向かう」「まず1ページだけ本を読む」といった小さな単位に作業を分割したり、エディタを自動で開くように設定して準備の手間を省いたりします。
+                        </p>
+                    </details>
+                    <details class="library-item">
+                        <summary>予めの意思決定</summary>
+                        <p class="library-content">
+                            行動を実施するタイミングと具体的な内容を事前に決めておく方法です。たとえば、「もし午前6時に目覚めたら、アラーム停止→顔を洗う→着替える」のようなif-thenルールを紙に書いて貼ったり、カレンダーに具体的な予定を入れたりすることで、その場での判断を不要にします。
+                        </p>
+                    </details>
+                    <details class="library-item">
+                        <summary>即時報酬の導入</summary>
+                        <p class="library-content">
+                            行動の直後に自分にとって心地よい報酬を与えることで、継続のモチベーションを高める方法です。たとえば、「25分の作業を完遂でコーヒーを1杯飲む」「集中セッション後に横になる休憩を許可する」など、達成感や満足感を行動と結びつけます。
+                        </p>
+                    </details>
+                    <details class="library-item">
+                        <summary>自己イメージの形成</summary>
+                        <p class="library-content">
+                            自分が目指す姿を言語化し、その人物像に基づいて行動を選択する方法です。たとえば、「私は〇〇を達成する人である」といった宣言を壁に貼ったり、「今日の作業の完了後に幸せな気分になっている」といった一時的なメモを書いたりすることで、理想の自分を具体化します。
+                        </p>
+                    </details>
+                    <details class="library-item">
+                        <summary>（その他）</summary>
+                        <p class="library-content">
+                            独自に定義した介入策を試行することができます。たとえば、「可変的報酬の導入」（作業の実施回数や継続時間をポイントとして貯蓄し、そのポイントを消費することで大きな報酬を自分に許可する）といった介入策を推奨します。
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div id="modal-message"></div>
+            <div id="modal-record-detail" class="hidden">
+                <!-- Content populated dynamically -->
+            </div>
+            <button id="btn-modal-close" class="btn-primary">閉じる</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="firebase-config.js"></script>
+    <script src="translations.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
