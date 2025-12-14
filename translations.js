@@ -5,9 +5,20 @@ const translations = {
             settings: "実験設定",
             record: "日次記録",
             results: "結果表示",
-            library: "介入策ライブラリ"
+            library: "介入策ライブラリ",
+            logout: "ログアウト"
         },
         loading: "読み込み中...",
+        login: {
+            title: "習慣改善トラッカー",
+            description: "行動科学に基づいた習慣形成支援アプリ",
+            googleButton: "Googleでログイン",
+            errors: {
+                popupClosed: "ログインがキャンセルされました。",
+                networkError: "ネットワークエラーが発生しました。",
+                generic: "ログインに失敗しました。"
+            }
+        },
         settings: {
             title: "実験設定",
             labels: {

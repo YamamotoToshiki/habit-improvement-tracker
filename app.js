@@ -1,5 +1,5 @@
-import { auth, db } from './firebase-config.js';
-import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { auth, db, googleProvider } from './firebase-config.js';
+import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, doc, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // =========================================
@@ -21,6 +21,7 @@ let chartInstances = {}; // Store chart instances by ID
 // =========================================
 const views = {
     loading: document.getElementById('view-loading'),
+    login: document.getElementById('view-login'),
     settings: document.getElementById('view-settings'),
     record: document.getElementById('view-record'),
     results: document.getElementById('view-results'),
@@ -45,17 +46,42 @@ async function initApp() {
         if (user) {
             console.log("User signed in:", user.uid);
             state.currentUser = user;
+            // Show header nav when logged in
+            document.getElementById('app-header').classList.remove('hidden');
             await checkActiveExperiment(user.uid);
         } else {
-            console.log("No user, signing in anonymously...");
-            try {
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Auth error:", error);
-                showModal(translations[state.currentLang].common.error);
-            }
+            console.log("No user, showing login view...");
+            state.currentUser = null;
+            // Hide header nav when not logged in
+            document.getElementById('app-header').classList.add('hidden');
+            switchView('login');
         }
     });
+
+    // Google Login Button
+    const loginBtn = document.getElementById('btn-google-login');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, googleProvider);
+            } catch (error) {
+                console.error("Google sign-in error:", error);
+                showModal(translations[state.currentLang].common.error + ': ' + error.message);
+            }
+        });
+    }
+
+    // Logout Button (optional)
+    const logoutBtn = document.getElementById('btn-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Sign-out error:", error);
+            }
+        });
+    }
 }
 
 // =========================================
