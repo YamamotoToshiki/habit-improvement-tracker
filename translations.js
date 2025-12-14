@@ -5,7 +5,7 @@ const translations = {
             settings: "実験設定",
             record: "日次記録",
             results: "結果表示",
-            library: "介入策ライブラリ",
+            library: "介入策一覧",
             logout: "ログアウト"
         },
         loading: "読み込み中...",
@@ -149,7 +149,7 @@ const translations = {
             }
         },
         library: {
-            title: "介入策ライブラリ",
+            title: "介入策一覧",
             items: {
                 environment: {
                     title: "環境の整備",
