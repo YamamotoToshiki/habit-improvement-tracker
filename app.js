@@ -1,6 +1,6 @@
-import { auth, db, googleProvider } from './firebase-config.js';
+import { auth, db, googleProvider, messaging, getToken, onMessage, VAPID_KEY } from './firebase-config.js';
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, doc, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, setDoc, doc, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // =========================================
 // State Management
@@ -49,6 +49,8 @@ async function initApp() {
             // Show header nav when logged in
             document.getElementById('app-header').classList.remove('hidden');
             await checkActiveExperiment(user.uid);
+            // Request notification permission and save FCM token
+            await requestNotificationPermission(user.uid);
         } else {
             console.log("No user, showing login view...");
             state.currentUser = null;
@@ -82,6 +84,85 @@ async function initApp() {
             }
         });
     }
+}
+
+// =========================================
+// FCM Push Notification Setup
+// =========================================
+async function requestNotificationPermission(userId) {
+    // Check if messaging is supported
+    if (!messaging) {
+        console.log("Firebase Messaging not supported in this browser");
+        return;
+    }
+
+    // Check localStorage for permission status
+    const permissionStatus = localStorage.getItem('notificationPermission');
+
+    // If already denied, don't ask again
+    if (permissionStatus === 'denied') {
+        console.log("Notification permission was previously denied");
+        return;
+    }
+
+    try {
+        // Request permission
+        const permission = await Notification.requestPermission();
+        localStorage.setItem('notificationPermission', permission);
+
+        if (permission === 'granted') {
+            console.log("Notification permission granted");
+
+            // Get FCM token
+            const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+
+            if (token) {
+                console.log("FCM Token:", token);
+
+                // Save token to Firestore for this user
+                await saveFcmToken(userId, token);
+
+                // Set up foreground message handler
+                setupForegroundMessageHandler();
+            } else {
+                console.log("No registration token available");
+            }
+        } else {
+            console.log("Notification permission denied");
+        }
+    } catch (error) {
+        console.error("Error requesting notification permission:", error);
+    }
+}
+
+async function saveFcmToken(userId, token) {
+    try {
+        // Save FCM token to user's document in Firestore
+        const userTokenRef = doc(db, "userTokens", userId);
+        await setDoc(userTokenRef, {
+            fcmToken: token,
+            updatedAt: serverTimestamp(),
+            userId: userId
+        }, { merge: true });
+        console.log("FCM token saved to Firestore");
+    } catch (error) {
+        console.error("Error saving FCM token:", error);
+    }
+}
+
+function setupForegroundMessageHandler() {
+    if (!messaging) return;
+
+    onMessage(messaging, (payload) => {
+        console.log("Foreground message received:", payload);
+
+        // Show notification manually when app is in foreground
+        const title = payload.notification?.title || '習慣改善トラッカー';
+        const body = payload.notification?.body || '今日の習慣改善を記録しましょう！';
+
+        // Use the app's modal to show the notification
+        showModal(body);
+    });
 }
 
 // =========================================
