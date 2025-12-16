@@ -486,13 +486,8 @@ async function loadDailyRecord() {
         return;
     }
 
-    // Enable Form (Revert disabled state)
-    document.getElementById('record-carried-out').disabled = false;
-    document.getElementById('record-memo').disabled = false;
-    document.querySelector('label[for="record-carried-out"]').style.opacity = '1';
-    document.querySelector('label[for="record-memo"]').style.opacity = '1';
-
-    // editBtn/saveBtn will be handled by logic below (based on existing record)
+    // Note: Form inputs (carried-out, memo) will be enabled/disabled
+    // AFTER checking for existing records below.
 
     const exp = state.currentExperiment;
 
@@ -543,15 +538,19 @@ async function loadDailyRecord() {
 
         const saveBtn = document.getElementById('btn-save-record');
         const editBtn = document.getElementById('btn-edit-record');
+        const carriedOutCheckbox = document.getElementById('record-carried-out');
+        const memoTextarea = document.getElementById('record-memo');
+        const carriedOutLabel = document.querySelector('label[for="record-carried-out"]');
+        const memoLabel = document.querySelector('label[for="record-memo"]');
 
         if (!querySnapshot.empty) {
-            // Record exists
+            // Record exists for today - LOCK the form, only allow editing
             const doc = querySnapshot.docs[0];
             const data = doc.data();
             currentRecordId = doc.id;
 
             // Populate Form
-            document.getElementById('record-carried-out').checked = data.carriedOut;
+            carriedOutCheckbox.checked = data.carriedOut;
             if (data.carriedOut) {
                 document.getElementById('record-started-time').value = data.startedTime;
                 document.getElementById('record-duration').value = data.durationTime;
@@ -566,25 +565,36 @@ async function loadDailyRecord() {
                 document.getElementById('record-fatigue').value = data.fatigue;
                 document.getElementById('val-fatigue').textContent = data.fatigue;
             }
-            document.getElementById('record-memo').value = data.memo || "";
+            memoTextarea.value = data.memo || "";
             document.getElementById('memo-char-count').textContent = (data.memo || "").length;
 
-            // Update UI State
+            // Update UI State for details container
             toggleRecordInputs(data.carriedOut);
             toggleInterruptionInput(data.interrupted);
 
-            // Lock Form
+            // Lock Form - disable ALL inputs including carried-out and memo
             lockRecordForm(true);
             saveBtn.disabled = true;
             editBtn.disabled = false;
+
+            // Ensure labels are normal (not grayed out) but inputs are disabled
+            if (carriedOutLabel) carriedOutLabel.style.opacity = '1';
+            if (memoLabel) memoLabel.style.opacity = '1';
         } else {
-            // No record for today
+            // No record for today - UNLOCK the form for new entry
             currentRecordId = null;
-            lockRecordForm(false);
+
+            // Enable carried-out and memo inputs
+            carriedOutCheckbox.disabled = false;
+            memoTextarea.disabled = false;
+            if (carriedOutLabel) carriedOutLabel.style.opacity = '1';
+            if (memoLabel) memoLabel.style.opacity = '1';
+
+            // Enable save, disable edit
             saveBtn.disabled = false;
             editBtn.disabled = true;
 
-            // Trigger initial UI state
+            // Trigger initial UI state (details container stays disabled until checkbox is checked)
             toggleRecordInputs(false);
         }
 
