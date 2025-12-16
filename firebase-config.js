@@ -19,6 +19,7 @@ const firebaseConfig = {
 const VAPID_KEY = "BJppLOdKhn-xu1CMa2th8QGguAWYYucdTdvzfBgKGWICr2grMK2m7k0ISOdjI-zzBNSIh-6Y1PqTx16WZYPdQb8";
 
 // Initialize Firebase
+console.log("Firebase Config:", firebaseConfig);
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firestore and Auth
