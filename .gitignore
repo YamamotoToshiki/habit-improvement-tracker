@@ -1,6 +1,9 @@
 # requirements
 habit_tracker_requirements.md
 
+# console directory
+consoleLogs/
+
 # Logs
 logs
 *.log
