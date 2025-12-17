@@ -678,10 +678,11 @@ document.getElementById('btn-save-record').addEventListener('click', async () =>
     const carriedOut = document.getElementById('record-carried-out').checked;
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
+    const todayTimestamp = Timestamp.fromDate(todayStart);
 
     const recordData = {
         experimentId: state.currentExperiment.id,
-        recordedDate: Timestamp.fromDate(todayStart),
+        recordedDate: todayTimestamp,
         carriedOut: carriedOut,
         memo: document.getElementById('record-memo').value.trim(),
         userId: state.currentUser.uid
@@ -700,13 +701,25 @@ document.getElementById('btn-save-record').addEventListener('click', async () =>
     }
 
     try {
-        if (currentRecordId) {
-            // Update
-            await updateDoc(doc(db, "records", currentRecordId), recordData);
+        // ALWAYS check Firestore for existing record for today (don't rely on in-memory currentRecordId)
+        const existingQuery = query(
+            collection(db, "records"),
+            where("experimentId", "==", state.currentExperiment.id),
+            where("recordedDate", "==", todayTimestamp)
+        );
+        const existingSnapshot = await getDocs(existingQuery);
+
+        if (!existingSnapshot.empty) {
+            // Record exists for today - UPDATE it
+            const existingDocId = existingSnapshot.docs[0].id;
+            await updateDoc(doc(db, "records", existingDocId), recordData);
+            currentRecordId = existingDocId;
+            console.log("Record updated:", existingDocId);
         } else {
-            // Create
+            // No record for today - CREATE new one
             const docRef = await addDoc(collection(db, "records"), recordData);
             currentRecordId = docRef.id;
+            console.log("Record created:", docRef.id);
         }
 
         // Clear cache so Results view updates
