@@ -530,6 +530,7 @@ async function loadDailyRecord() {
     try {
         const q = query(
             collection(db, "records"),
+            where("userId", "==", state.currentUser.uid),
             where("experimentId", "==", exp.id),
             where("recordedDate", "==", todayTimestamp)
         );
@@ -704,6 +705,7 @@ document.getElementById('btn-save-record').addEventListener('click', async () =>
         // ALWAYS check Firestore for existing record for today (don't rely on in-memory currentRecordId)
         const existingQuery = query(
             collection(db, "records"),
+            where("userId", "==", state.currentUser.uid),
             where("experimentId", "==", state.currentExperiment.id),
             where("recordedDate", "==", todayTimestamp)
         );
@@ -813,6 +815,7 @@ async function loadExperimentResults(experimentId) {
             // Fetch records
             const q = query(
                 collection(db, "records"),
+                where("userId", "==", state.currentUser.uid),
                 where("experimentId", "==", experimentId)
             );
 
