@@ -113,8 +113,19 @@ async function requestNotificationPermission(userId) {
         if (permission === 'granted') {
             console.log("Notification permission granted");
 
-            // Get FCM token
-            const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+            // Register service worker explicitly for GitHub Pages subdirectory hosting
+            // The service worker must be registered at the correct path
+            const swRegistration = await navigator.serviceWorker.register(
+                './firebase-messaging-sw.js',
+                { scope: './' }
+            );
+            console.log("Firebase Messaging Service Worker registered:", swRegistration);
+
+            // Get FCM token with the registered service worker
+            const token = await getToken(messaging, {
+                vapidKey: VAPID_KEY,
+                serviceWorkerRegistration: swRegistration
+            });
 
             if (token) {
                 console.log("FCM Token:", token);
