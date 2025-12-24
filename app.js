@@ -1,6 +1,6 @@
 import { auth, db, googleProvider, messaging, getToken, onMessage, VAPID_KEY } from './firebase-config.js';
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, setDoc, doc, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, setDoc, doc, Timestamp, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // =========================================
 // State Management
@@ -149,13 +149,14 @@ async function requestNotificationPermission(userId) {
 async function saveFcmToken(userId, token) {
     try {
         // Save FCM token to user's document in Firestore
+        // Using arrayUnion to support multiple devices per user
         const userTokenRef = doc(db, "userTokens", userId);
         await setDoc(userTokenRef, {
-            fcmToken: token,
+            fcmTokens: arrayUnion(token),  // Array of tokens (one per device)
             updatedAt: serverTimestamp(),
             userId: userId
         }, { merge: true });
-        console.log("FCM token saved to Firestore");
+        console.log("FCM token saved to Firestore (multi-device support)");
     } catch (error) {
         console.error("Error saving FCM token:", error);
     }
