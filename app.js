@@ -96,6 +96,12 @@ async function requestNotificationPermission(userId) {
         return;
     }
 
+    // Check if Service Worker is supported
+    if (!('serviceWorker' in navigator)) {
+        console.log("Service Worker not supported in this browser");
+        return;
+    }
+
     // Check localStorage for permission status
     const permissionStatus = localStorage.getItem('notificationPermission');
 
@@ -107,28 +113,55 @@ async function requestNotificationPermission(userId) {
 
     try {
         // Request permission
+        console.log("Requesting notification permission...");
         const permission = await Notification.requestPermission();
+        console.log("Notification permission result:", permission);
         localStorage.setItem('notificationPermission', permission);
 
         if (permission === 'granted') {
             console.log("Notification permission granted");
 
             // Register service worker explicitly for GitHub Pages subdirectory hosting
-            // The service worker must be registered at the correct path
+            console.log("Registering Firebase Messaging Service Worker...");
             const swRegistration = await navigator.serviceWorker.register(
                 './firebase-messaging-sw.js',
                 { scope: './' }
             );
-            console.log("Firebase Messaging Service Worker registered:", swRegistration);
+            console.log("Service Worker registration:", swRegistration);
+
+            // Wait for service worker to be ready (important for iOS)
+            console.log("Waiting for Service Worker to be ready...");
+            await navigator.serviceWorker.ready;
+            console.log("Service Worker is ready");
+
+            // If the SW is installing or waiting, wait for it to become active
+            if (swRegistration.installing || swRegistration.waiting) {
+                console.log("Service Worker is installing/waiting, waiting for active state...");
+                await new Promise((resolve) => {
+                    const sw = swRegistration.installing || swRegistration.waiting;
+                    sw.addEventListener('statechange', (e) => {
+                        if (e.target.state === 'activated') {
+                            console.log("Service Worker activated");
+                            resolve();
+                        }
+                    });
+                    // Timeout after 10 seconds
+                    setTimeout(() => {
+                        console.log("Service Worker activation timeout, proceeding anyway");
+                        resolve();
+                    }, 10000);
+                });
+            }
 
             // Get FCM token with the registered service worker
+            console.log("Getting FCM token...");
             const token = await getToken(messaging, {
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: swRegistration
             });
 
             if (token) {
-                console.log("FCM Token:", token);
+                console.log("FCM Token obtained:", token.substring(0, 20) + "...");
 
                 // Save token to Firestore for this user
                 await saveFcmToken(userId, token);
@@ -136,13 +169,16 @@ async function requestNotificationPermission(userId) {
                 // Set up foreground message handler
                 setupForegroundMessageHandler();
             } else {
-                console.log("No registration token available");
+                console.warn("No FCM registration token available. This may happen on iOS if not running as installed PWA.");
             }
         } else {
             console.log("Notification permission denied");
         }
     } catch (error) {
         console.error("Error requesting notification permission:", error);
+        console.error("Error name:", error.name);
+        console.error("Error message:", error.message);
+        console.error("Error code:", error.code);
     }
 }
 
