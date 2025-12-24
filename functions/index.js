@@ -92,11 +92,7 @@ exports.sendScheduledNotifications = onSchedule(
                     }
 
                     const tokenData = tokenDoc.data();
-                    // Support both old format (fcmToken) and new format (fcmTokens array)
-                    let fcmTokens = tokenData.fcmTokens || [];
-                    if (tokenData.fcmToken && !fcmTokens.includes(tokenData.fcmToken)) {
-                        fcmTokens.push(tokenData.fcmToken); // Backward compatibility
-                    }
+                    const fcmTokens = tokenData.fcmTokens || [];
 
                     if (fcmTokens.length === 0) {
                         logger.warn(`No FCM tokens available for user: ${userId}`);
@@ -223,11 +219,7 @@ exports.testNotification = onRequest(
             }
 
             const tokenData = tokenDoc.data();
-            // Support both old format (fcmToken) and new format (fcmTokens array)
-            let fcmTokens = tokenData.fcmTokens || [];
-            if (tokenData.fcmToken && !fcmTokens.includes(tokenData.fcmToken)) {
-                fcmTokens.push(tokenData.fcmToken); // Backward compatibility
-            }
+            const fcmTokens = tokenData.fcmTokens || [];
 
             if (fcmTokens.length === 0) {
                 res.status(404).send("No FCM tokens available for user");
