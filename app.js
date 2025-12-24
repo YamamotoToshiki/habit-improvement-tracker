@@ -17,6 +17,61 @@ let calendarInstance = null;
 let chartInstances = {}; // Store chart instances by ID
 
 // =========================================
+// Debug Logging (for iOS debugging)
+// =========================================
+const DEBUG_MODE = true; // Set to false in production
+const debugLogs = [];
+
+function debugLog(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+    debugLogs.push(logEntry);
+
+    // Also log to console
+    if (type === 'error') {
+        console.error(message);
+    } else if (type === 'warn') {
+        console.warn(message);
+    } else {
+        console.log(message);
+    }
+
+    // Update debug panel if visible
+    if (DEBUG_MODE) {
+        const debugContent = document.getElementById('debug-log-content');
+        if (debugContent) {
+            debugContent.innerHTML = debugLogs.slice(-50).map(log => `<div>${log}</div>`).join('');
+            debugContent.scrollTop = debugContent.scrollHeight;
+        }
+    }
+}
+
+// Triple-tap on header to show debug panel
+let tapCount = 0;
+let tapTimeout = null;
+document.addEventListener('DOMContentLoaded', () => {
+    const header = document.getElementById('app-header');
+    if (header && DEBUG_MODE) {
+        header.addEventListener('click', () => {
+            tapCount++;
+            if (tapCount === 3) {
+                const panel = document.getElementById('debug-panel');
+                if (panel) {
+                    panel.classList.toggle('hidden');
+                    const debugContent = document.getElementById('debug-log-content');
+                    if (debugContent) {
+                        debugContent.innerHTML = debugLogs.slice(-50).map(log => `<div>${log}</div>`).join('');
+                    }
+                }
+                tapCount = 0;
+            }
+            clearTimeout(tapTimeout);
+            tapTimeout = setTimeout(() => { tapCount = 0; }, 500);
+        });
+    }
+});
+
+// =========================================
 // DOM Elements
 // =========================================
 const views = {
@@ -92,13 +147,13 @@ async function initApp() {
 async function requestNotificationPermission(userId) {
     // Check if messaging is supported
     if (!messaging) {
-        console.log("Firebase Messaging not supported in this browser");
+        debugLog("Firebase Messaging not supported in this browser", "warn");
         return;
     }
 
     // Check if Service Worker is supported
     if (!('serviceWorker' in navigator)) {
-        console.log("Service Worker not supported in this browser");
+        debugLog("Service Worker not supported in this browser", "warn");
         return;
     }
 
@@ -107,61 +162,62 @@ async function requestNotificationPermission(userId) {
 
     // If already denied, don't ask again
     if (permissionStatus === 'denied') {
-        console.log("Notification permission was previously denied");
+        debugLog("Notification permission was previously denied", "info");
         return;
     }
 
     try {
         // Request permission
-        console.log("Requesting notification permission...");
+        debugLog("Requesting notification permission...");
         const permission = await Notification.requestPermission();
-        console.log("Notification permission result:", permission);
+        debugLog(`Notification permission result: ${permission}`);
         localStorage.setItem('notificationPermission', permission);
 
         if (permission === 'granted') {
-            console.log("Notification permission granted");
+            debugLog("Notification permission granted");
 
             // Register service worker explicitly for GitHub Pages subdirectory hosting
-            console.log("Registering Firebase Messaging Service Worker...");
+            debugLog("Registering Firebase Messaging Service Worker...");
             const swRegistration = await navigator.serviceWorker.register(
                 './firebase-messaging-sw.js',
                 { scope: './' }
             );
-            console.log("Service Worker registration:", swRegistration);
+            debugLog(`Service Worker registration state: ${swRegistration.active ? 'active' : swRegistration.installing ? 'installing' : swRegistration.waiting ? 'waiting' : 'unknown'}`);
 
             // Wait for service worker to be ready (important for iOS)
-            console.log("Waiting for Service Worker to be ready...");
+            debugLog("Waiting for Service Worker to be ready...");
             await navigator.serviceWorker.ready;
-            console.log("Service Worker is ready");
+            debugLog("Service Worker is ready");
 
             // If the SW is installing or waiting, wait for it to become active
             if (swRegistration.installing || swRegistration.waiting) {
-                console.log("Service Worker is installing/waiting, waiting for active state...");
+                debugLog("Service Worker is installing/waiting, waiting for active state...");
                 await new Promise((resolve) => {
                     const sw = swRegistration.installing || swRegistration.waiting;
                     sw.addEventListener('statechange', (e) => {
+                        debugLog(`Service Worker state changed to: ${e.target.state}`);
                         if (e.target.state === 'activated') {
-                            console.log("Service Worker activated");
+                            debugLog("Service Worker activated");
                             resolve();
                         }
                     });
                     // Timeout after 10 seconds
                     setTimeout(() => {
-                        console.log("Service Worker activation timeout, proceeding anyway");
+                        debugLog("Service Worker activation timeout, proceeding anyway", "warn");
                         resolve();
                     }, 10000);
                 });
             }
 
             // Get FCM token with the registered service worker
-            console.log("Getting FCM token...");
+            debugLog("Getting FCM token...");
             const token = await getToken(messaging, {
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: swRegistration
             });
 
             if (token) {
-                console.log("FCM Token obtained:", token.substring(0, 20) + "...");
+                debugLog(`FCM Token obtained: ${token.substring(0, 20)}...`);
 
                 // Save token to Firestore for this user
                 await saveFcmToken(userId, token);
@@ -169,16 +225,15 @@ async function requestNotificationPermission(userId) {
                 // Set up foreground message handler
                 setupForegroundMessageHandler();
             } else {
-                console.warn("No FCM registration token available. This may happen on iOS if not running as installed PWA.");
+                debugLog("No FCM registration token available. This may happen on iOS if not running as installed PWA.", "warn");
             }
         } else {
-            console.log("Notification permission denied");
+            debugLog("Notification permission denied");
         }
     } catch (error) {
-        console.error("Error requesting notification permission:", error);
-        console.error("Error name:", error.name);
-        console.error("Error message:", error.message);
-        console.error("Error code:", error.code);
+        debugLog(`Error requesting notification permission: ${error.message}`, "error");
+        debugLog(`Error name: ${error.name}`, "error");
+        debugLog(`Error code: ${error.code}`, "error");
     }
 }
 
