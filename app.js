@@ -104,24 +104,16 @@ debugLog(`Platform detection - iOS: ${isIOS}, Standalone: ${isStandalone}`);
 async function initApp() {
     applyTranslations(state.currentLang);
 
-    // Handle redirect result (for iOS signInWithRedirect)
-    try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-            debugLog(`Redirect auth successful: ${result.user.uid}`);
-        }
-    } catch (error) {
-        debugLog(`Redirect auth error: ${error.message}`, 'error');
-        // Don't show error modal here as user may not have used redirect auth
-    }
-
     // Listen for auth state changes
     onAuthStateChanged(auth, async (user) => {
+        debugLog(`onAuthStateChanged called, user: ${user ? user.uid : 'null'}`);
         if (user) {
             debugLog(`User signed in: ${user.uid}`);
             state.currentUser = user;
             // Show header nav when logged in
             document.getElementById('app-header').classList.remove('hidden');
+            // Hide loading view
+            views.loading.classList.add('hidden');
             await checkActiveExperiment(user.uid);
 
             // NOTE: Do NOT auto-request notification permission here
@@ -142,19 +134,36 @@ async function initApp() {
     if (loginBtn) {
         loginBtn.addEventListener('click', async () => {
             debugLog("Login button clicked");
+
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ログイン中...';
+
             try {
-                if (isIOS && isStandalone) {
-                    // iOS PWA: use redirect to avoid popup issues
-                    debugLog("Using signInWithRedirect for iOS PWA");
-                    await signInWithRedirect(auth, googleProvider);
-                } else {
-                    // Other platforms: use popup
-                    debugLog("Using signInWithPopup");
-                    await signInWithPopup(auth, googleProvider);
-                }
+                // Use signInWithPopup for all platforms
+                // Note: On iOS PWA, popup may open in Safari if needed
+                debugLog("Using signInWithPopup");
+                const result = await signInWithPopup(auth, googleProvider);
+                debugLog(`signInWithPopup successful: ${result.user.uid}`);
             } catch (error) {
-                debugLog(`Google sign-in error: ${error.message}`, 'error');
-                showModal(translations[state.currentLang].common.error + ': ' + error.message);
+                debugLog(`Google sign-in error: ${error.code} - ${error.message}`, 'error');
+
+                // Reset button state
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fa-brands fa-google"></i> Googleでログイン';
+
+                // Handle specific error codes
+                if (error.code === 'auth/popup-closed-by-user') {
+                    // User closed popup, don't show error
+                    debugLog("Popup closed by user, no error shown");
+                } else if (error.code === 'auth/popup-blocked') {
+                    showModal('ポップアップがブロックされました。ブラウザの設定でポップアップを許可してください。');
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    // Multiple popup requests, ignore
+                    debugLog("Cancelled popup request, no error shown");
+                } else {
+                    showModal(translations[state.currentLang].common.error + ': ' + error.message);
+                }
             }
         });
     }
