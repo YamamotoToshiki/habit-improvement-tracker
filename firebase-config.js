@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js";
 
 // Your web app's Firebase configuration
@@ -37,4 +37,4 @@ try {
 }
 
 // Export initialized instances for use in other modules
-export { app, db, auth, googleProvider, messaging, getToken, onMessage, VAPID_KEY };
+export { app, db, auth, googleProvider, messaging, getToken, onMessage, VAPID_KEY, signInWithRedirect, getRedirectResult };

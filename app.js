@@ -1,4 +1,4 @@
-import { auth, db, googleProvider, messaging, getToken, onMessage, VAPID_KEY } from './firebase-config.js';
+import { auth, db, googleProvider, messaging, getToken, onMessage, VAPID_KEY, signInWithRedirect, getRedirectResult } from './firebase-config.js';
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, setDoc, doc, Timestamp, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
@@ -93,21 +93,43 @@ const navButtons = {
 // =========================================
 // Initialization Logic
 // =========================================
+
+// Detect iOS (iPhone, iPad, iPod)
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+// Detect if running as installed PWA (standalone mode)
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+debugLog(`Platform detection - iOS: ${isIOS}, Standalone: ${isStandalone}`);
+
 async function initApp() {
     applyTranslations(state.currentLang);
+
+    // Handle redirect result (for iOS signInWithRedirect)
+    try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+            debugLog(`Redirect auth successful: ${result.user.uid}`);
+        }
+    } catch (error) {
+        debugLog(`Redirect auth error: ${error.message}`, 'error');
+        // Don't show error modal here as user may not have used redirect auth
+    }
 
     // Listen for auth state changes
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            console.log("User signed in:", user.uid);
+            debugLog(`User signed in: ${user.uid}`);
             state.currentUser = user;
             // Show header nav when logged in
             document.getElementById('app-header').classList.remove('hidden');
             await checkActiveExperiment(user.uid);
-            // Request notification permission and save FCM token
-            await requestNotificationPermission(user.uid);
+
+            // NOTE: Do NOT auto-request notification permission here
+            // iOS requires user interaction (button tap) for notification permission
+            // Permission will be requested when user saves experiment settings
+            // or taps the notification enable button
         } else {
-            console.log("No user, showing login view...");
+            debugLog("No user, showing login view...");
             state.currentUser = null;
             // Hide header nav when not logged in
             document.getElementById('app-header').classList.add('hidden');
@@ -119,23 +141,43 @@ async function initApp() {
     const loginBtn = document.getElementById('btn-google-login');
     if (loginBtn) {
         loginBtn.addEventListener('click', async () => {
+            debugLog("Login button clicked");
             try {
-                await signInWithPopup(auth, googleProvider);
+                if (isIOS && isStandalone) {
+                    // iOS PWA: use redirect to avoid popup issues
+                    debugLog("Using signInWithRedirect for iOS PWA");
+                    await signInWithRedirect(auth, googleProvider);
+                } else {
+                    // Other platforms: use popup
+                    debugLog("Using signInWithPopup");
+                    await signInWithPopup(auth, googleProvider);
+                }
             } catch (error) {
-                console.error("Google sign-in error:", error);
+                debugLog(`Google sign-in error: ${error.message}`, 'error');
                 showModal(translations[state.currentLang].common.error + ': ' + error.message);
             }
         });
     }
 
-    // Logout Button (optional)
+    // Logout Button
     const logoutBtn = document.getElementById('btn-logout');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             try {
                 await signOut(auth);
             } catch (error) {
-                console.error("Sign-out error:", error);
+                debugLog(`Sign-out error: ${error.message}`, 'error');
+            }
+        });
+    }
+
+    // Notification Enable Button (for requesting permission with user interaction)
+    const notificationBtn = document.getElementById('btn-enable-notification');
+    if (notificationBtn) {
+        notificationBtn.addEventListener('click', async () => {
+            debugLog("Notification enable button clicked");
+            if (state.currentUser) {
+                await requestNotificationPermission(state.currentUser.uid);
             }
         });
     }
@@ -224,6 +266,9 @@ async function requestNotificationPermission(userId) {
 
                 // Set up foreground message handler
                 setupForegroundMessageHandler();
+
+                // Update notification section UI to show success state
+                updateNotificationSectionUI();
             } else {
                 debugLog("No FCM registration token available. This may happen on iOS if not running as installed PWA.", "warn");
             }
@@ -376,6 +421,9 @@ function updateSettingsViewState(hasActiveExperiment) {
     const inputs = form.querySelectorAll('input, select, textarea');
     const saveBtn = document.getElementById('btn-save-experiment');
     const endBtn = document.getElementById('btn-end-experiment');
+    const notificationSection = document.getElementById('notification-section');
+    const notificationStatus = document.getElementById('notification-status');
+    const notificationBtn = document.getElementById('btn-enable-notification');
 
     if (hasActiveExperiment) {
         // Populate form with current experiment data
@@ -404,6 +452,12 @@ function updateSettingsViewState(hasActiveExperiment) {
             saveBtn.disabled = true;
             endBtn.disabled = false;
         }
+
+        // Show notification section when there's an active experiment
+        if (notificationSection) {
+            notificationSection.style.display = 'block';
+            updateNotificationSectionUI();
+        }
     } else {
         // Unlock inputs
         inputs.forEach(input => input.disabled = false);
@@ -414,6 +468,38 @@ function updateSettingsViewState(hasActiveExperiment) {
         form.reset();
         // Re-trigger strategy change to set initial state of custom field
         document.getElementById('setting-strategy').dispatchEvent(new Event('change'));
+
+        // Hide notification section when no active experiment
+        if (notificationSection) {
+            notificationSection.style.display = 'none';
+        }
+    }
+}
+
+// Update notification section UI based on current permission state
+function updateNotificationSectionUI() {
+    const notificationStatus = document.getElementById('notification-status');
+    const notificationBtn = document.getElementById('btn-enable-notification');
+
+    if (!notificationStatus || !notificationBtn) return;
+
+    if (!('Notification' in window)) {
+        notificationStatus.textContent = 'お使いのブラウザは通知に対応していません。';
+        notificationBtn.style.display = 'none';
+        return;
+    }
+
+    const permission = Notification.permission;
+
+    if (permission === 'granted') {
+        notificationStatus.innerHTML = '<i class="fa-solid fa-check" style="color: var(--color-success);"></i> 通知は有効です。設定した時刻にリマインダーが届きます。';
+        notificationBtn.style.display = 'none';
+    } else if (permission === 'denied') {
+        notificationStatus.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--color-danger);"></i> 通知がブロックされています。ブラウザの設定から許可してください。';
+        notificationBtn.style.display = 'none';
+    } else {
+        notificationStatus.textContent = '通知が未設定です。通知を有効にすると、設定した時刻にリマインダーが届きます。';
+        notificationBtn.style.display = 'block';
     }
 }
 
@@ -496,17 +582,12 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
             userId: state.currentUser.uid
         });
 
-        console.log("Experiment saved with ID: ", docRef.id);
+        debugLog(`Experiment saved with ID: ${docRef.id}`);
         showModal(t.settings.messages.saveSuccess);
 
-        // Request Notification Permission
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    console.log('Notification permission granted.');
-                }
-            });
-        }
+        // Request Notification Permission (user interaction triggered - this works on iOS)
+        debugLog("Requesting notification permission after experiment save...");
+        await requestNotificationPermission(state.currentUser.uid);
 
         // Refresh state
         await checkActiveExperiment(state.currentUser.uid);
