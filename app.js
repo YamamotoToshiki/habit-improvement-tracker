@@ -1223,13 +1223,15 @@ function renderChart1(records) {
     const colorSuccess = rootStyles.getPropertyValue('--color-success').trim() || '#16B981';
     const colorDanger = rootStyles.getPropertyValue('--color-danger').trim() || '#EF4444';
 
-    // Plugin to draw center text
+    // Plugin to draw center text with responsive font size
     const centerTextPlugin = {
         id: 'centerText',
         afterDraw: (chart) => {
             const { ctx, chartArea: { width, height, top, left } } = chart;
             ctx.save();
-            ctx.font = 'bold 24px sans-serif';
+            // Responsive font size: base on chart width, min 14px, max 24px
+            const fontSize = Math.max(14, Math.min(24, width * 0.08));
+            ctx.font = `bold ${fontSize}px sans-serif`;
             ctx.fillStyle = textPrimary;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1258,7 +1260,12 @@ function renderChart1(records) {
                 legend: { position: 'bottom', labels: { color: textSecondary } },
                 datalabels: {
                     color: textSecondary,
-                    font: { weight: 'bold', size: 24 },
+                    font: (context) => {
+                        // Responsive font size based on chart width
+                        const chartWidth = context.chart.width;
+                        const size = Math.max(12, Math.min(20, chartWidth * 0.05));
+                        return { weight: 'bold', size: size };
+                    },
                     formatter: (value, ctx) => {
                         const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                         if (total === 0 || value === 0) return '';
