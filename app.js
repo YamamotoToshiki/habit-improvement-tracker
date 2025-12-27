@@ -1303,12 +1303,36 @@ function renderChart2(records) {
     // Filter: only carriedOut records with durationTime
     const activeRecords = records.filter(r => r.carriedOut && r.durationTime);
 
+    // Common Y-axis configuration (fixed 1-5 scale)
+    const yAxisConfig = {
+        beginAtZero: false,
+        min: 1,
+        max: 5,
+        ticks: {
+            stepSize: 1,
+            callback: (value) => value,
+            color: textSecondary
+        },
+        title: { display: true, text: 'スコア', color: textSecondary },
+        grid: { color: textSecondary + '33' }
+    };
+
     if (activeRecords.length === 0) {
-        // No data to display
+        // No data to display - still show fixed 1-5 Y-axis
         chartInstances['chart-2'] = new Chart(ctx, {
             type: 'bar',
-            data: { labels: [], datasets: [{ label: '作業時間 (分)', data: [] }] },
-            options: { responsive: true, plugins: { title: { display: true, text: 'データがありません', color: textSecondary } } }
+            data: { labels: [], datasets: [{ label: '作業継続スコア', data: [] }] },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: 'データがありません', color: textSecondary },
+                    legend: { labels: { color: textSecondary } }
+                },
+                scales: {
+                    x: { ticks: { color: textSecondary }, grid: { color: textSecondary + '33' } },
+                    y: yAxisConfig
+                }
+            }
         });
         return;
     }
@@ -1387,18 +1411,7 @@ function renderChart2(records) {
                     ticks: { color: textSecondary },
                     grid: { color: textSecondary + '33' }
                 },
-                y: {
-                    beginAtZero: false,
-                    min: 1,
-                    max: 5,
-                    ticks: {
-                        stepSize: 1,
-                        callback: (value) => value,
-                        color: textSecondary
-                    },
-                    title: { display: true, text: 'スコア', color: textSecondary },
-                    grid: { color: textSecondary + '33' }
-                }
+                y: yAxisConfig
             }
         }
     });
