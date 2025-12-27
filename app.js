@@ -1240,7 +1240,7 @@ function renderChart1(records) {
             let textString = `実施率\n${completionRate}%`;
             let textResult = textString.replace(/\n/, `<br>`);
             const textRate = document.getElementById('textRate');
-            textRate.innerText = textResult;
+            textRate.innerHTML = textResult;
             ctx.fillText(textRate, centerX, centerY);
             ctx.restore();
         }
