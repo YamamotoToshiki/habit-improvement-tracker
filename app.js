@@ -1237,7 +1237,9 @@ function renderChart1(records) {
             ctx.textBaseline = 'middle';
             const centerX = left + width / 2;
             const centerY = top + height / 2;
-            ctx.fillText(`実施率\n${completionRate}%`, centerX, centerY);
+            const textRate = `実施率
+            ${completionRate}%`;
+            ctx.fillText(textRate, centerX, centerY);
             ctx.restore();
         }
     };
