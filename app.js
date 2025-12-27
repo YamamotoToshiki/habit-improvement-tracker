@@ -1237,7 +1237,7 @@ function renderChart1(records) {
             ctx.textBaseline = 'middle';
             const centerX = left + width / 2;
             const centerY = top + height / 2;
-            ctx.fillText(`実施率: ${completionRate}%`, centerX, centerY);
+            ctx.fillText(`実施率: \n${completionRate}%`, centerX, centerY);
             ctx.restore();
         }
     };
@@ -1270,9 +1270,7 @@ function renderChart1(records) {
                         const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                         if (total === 0 || value === 0) return '';
                         const percentage = Math.round((value / total) * 100);
-                        // Add series name: `実施済` or `非実施`
-                        const seriesName = ctx.dataIndex === 0 ? '実施済: ' : '非実施: ';
-                        return `${seriesName}${percentage}%`;
+                        return `${percentage}%`;
                     }
                 },
                 tooltip: {
