@@ -1182,20 +1182,15 @@ function showRecordDetail(record) {
 
     let content = `<h3>${date} の記録</h3>`;
     content += `<div style="text-align:left; margin-top:16px;">`;
-    content += `<p><strong>実施:</strong> ${record.carriedOut ? 'はい' : 'いいえ'}</p>`;
-
-    if (record.carriedOut) {
-        content += `<p><strong>時間帯:</strong> ${record.startedTime || '-'}</p>`;
-        content += `<p><strong>継続時間:</strong> ${record.durationTime || '-'}分</p>`;
-        content += `<p><strong>集中度:</strong> ${record.concentration || '-'}</p>`;
-        content += `<p><strong>達成感:</strong> ${record.accomplishment || '-'}</p>`;
-        content += `<p><strong>疲労感:</strong> ${record.fatigue || '-'}</p>`;
-        if (record.interrupted) {
-            content += `<p><strong>中断:</strong> あり (${record.interruptionReason || '-'})</p>`;
-        }
-    }
-
-    content += `<p><strong>メモ:</strong><br>${(record.memo || '-').replace(/\n/g, '<br>')}</p>`;
+    content += `<p><strong>実施可否:</strong> ${record.carriedOut ? '○' : '×'}</p>`;
+    content += `<p><strong>開始時間帯:</strong> ${record.startedTime || '-'}</p>`;
+    content += `<p><strong>継続時間:</strong> ${record.durationTime || '-'}分</p>`;
+    content += `<p><strong>中断:</strong> ${record.interrupted ? 'あり' : 'なし'}</p>`;
+    content += `<p><strong>中断理由:</strong> ${('"' + record.interruptionReason + '"' || '-').replace(/\n/g, '<br>')}</p>`;
+    content += `<p><strong>集中度:</strong> ${record.concentration || '-'}</p>`;
+    content += `<p><strong>達成感:</strong> ${record.accomplishment || '-'}</p>`;
+    content += `<p><strong>疲労感:</strong> ${record.fatigue || '-'}</p>`;
+    content += `<p><strong>メモ:</strong><br>${('"' + record.memo  + '"' || '-').replace(/\n/g, '<br>')}</p>`;
     content += `</div>`;
 
     const detailContainer = document.getElementById('modal-record-detail');
