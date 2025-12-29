@@ -808,7 +808,7 @@ canvas {
 
 /* Chart container sizing for proper Chart.js rendering */
 .accordion-content {
-    width: 100%;
+    position: relative;
     height: 700px;
 }
 
