@@ -1027,8 +1027,8 @@ async function loadExperimentResults(experimentId) {
         // Update Info Area
         await updateResultInfo(experimentId, records);
 
-        // Initialize Record Reference UI
-        initRecordReferenceUI(records);
+        // Render Calendar
+        renderCalendar(records);
 
         // Render Charts
         renderChart1(records);
@@ -1082,52 +1082,53 @@ async function updateResultInfo(experimentId, records) {
     }
 }
 
-// =========================================
-// Daily Record Reference UI
-// =========================================
-let recordRefCalendarInstance = null;
-let currentRecordMap = {};
+// Toggle Calendar
+const calendarToggleBtn = document.getElementById('btn-calendar-toggle');
 
-// Helper to get YYYY-MM-DD in local time
-const getLocalYYYYMMDD = (date) => {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-};
-
-// Format duration to readable text
-function formatDuration(minutes) {
-    if (minutes === undefined || minutes === null) return '-';
-    switch (minutes) {
-        case 5: return '5分';
-        case 15: return '15分';
-        case 30: return '30分';
-        case 60: return '1時間';
-        case 180: return '3時間';
-        default: return `${minutes}分`;
-    }
+if (calendarToggleBtn) {
+    calendarToggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const container = document.getElementById('result-calendar-container');
+        if (container) {
+            container.classList.toggle('hidden');
+            if (!container.classList.contains('hidden')) {
+                const expId = document.getElementById('result-experiment-select')?.value;
+                const records = expId && experimentCache[expId] ? experimentCache[expId] : [];
+                if (calendarInstance) {
+                    if (typeof calendarInstance.redraw === 'function') calendarInstance.redraw();
+                    else if (typeof calendarInstance.jumpToDate === 'function') calendarInstance.jumpToDate(new Date());
+                } else {
+                    renderCalendar(records);
+                }
+            }
+        }
+    });
 }
 
-// Format boolean to ○/×
-function formatBoolean(value) {
-    if (value === undefined || value === null) return '-';
-    return value ? '〇' : '×';
-}
+// Calendar Logic
+function renderCalendar(records) {
+    const calendarEl = document.getElementById('calendar-placeholder');
 
-// Initialize record reference UI
-function initRecordReferenceUI(records) {
-    const dateInput = document.getElementById('record-ref-date');
-    if (!dateInput) return;
+    // Helper to get YYYY-MM-DD in local time
+    const getLocalYYYYMMDD = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    };
 
-    // Build record map
-    currentRecordMap = {};
+    // Map records to a dictionary for easy lookup by date string "YYYY-MM-DD"
+    const recordMap = {};
     records.forEach(r => {
         const dateStr = getLocalYYYYMMDD(r.recordedDate.toDate());
-        currentRecordMap[dateStr] = r;
+        recordMap[dateStr] = r;
     });
 
-    // Get date range from experiment info
+    if (calendarInstance) {
+        calendarInstance.destroy();
+    }
+
+    // Calendar Display Range (Extract start/end dates from the period text in resultsInfo)
     const periodText = document.getElementById('res-period')?.textContent || '';
     let minDateOpt = null, maxDateOpt = null;
     const parts = periodText.split('～');
@@ -1145,24 +1146,16 @@ function initRecordReferenceUI(records) {
         maxDateOpt = parseLocal(parts[1]);
     }
 
-    // Destroy existing instance
-    if (recordRefCalendarInstance) {
-        recordRefCalendarInstance.destroy();
-        recordRefCalendarInstance = null;
-    }
-
-    // Initialize flatpickr
-    recordRefCalendarInstance = flatpickr(dateInput, {
+    calendarInstance = flatpickr(calendarEl, {
+        inline: true,
         locale: 'ja',
-        dateFormat: 'Y/m/d',
+        dateFormat: "Y-m-d",
         minDate: minDateOpt,
         maxDate: maxDateOpt,
-        clickOpens: true,
-        allowInput: false,
         onDayCreate: function (dObj, dStr, fp, dayElem) {
             const dateStr = getLocalYYYYMMDD(dayElem.dateObj);
-            if (currentRecordMap[dateStr]) {
-                const r = currentRecordMap[dateStr];
+            if (recordMap[dateStr]) {
+                const r = recordMap[dateStr];
                 if (r.carriedOut) {
                     dayElem.classList.add('day-success');
                     dayElem.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
@@ -1171,104 +1164,46 @@ function initRecordReferenceUI(records) {
                     dayElem.classList.add('day-failure');
                     dayElem.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
                     dayElem.style.borderColor = 'var(--color-danger)';
+
                 }
+            }
+        },
+        onChange: function (selectedDates, dateStr, instance) {
+            if (recordMap[dateStr]) {
+                showRecordDetail(recordMap[dateStr]);
             }
         }
     });
 }
 
-// Update record reference display
-function updateRecordReferenceDisplay(record) {
-    document.getElementById('ref-recordedDate').textContent = record.recordedDate ?
-        record.recordedDate.toDate().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/') : '-';
-    document.getElementById('ref-carriedOut').textContent = formatBoolean(record.carriedOut);
-    document.getElementById('ref-startedTime').textContent = record.startedTime || '-';
-    document.getElementById('ref-durationTime').textContent = formatDuration(record.durationTime);
-    document.getElementById('ref-interrupted').textContent = formatBoolean(record.interrupted);
-    document.getElementById('ref-concentration').textContent = record.concentration !== undefined ? record.concentration : '-';
-    document.getElementById('ref-accomplishment').textContent = record.accomplishment !== undefined ? record.accomplishment : '-';
-    document.getElementById('ref-fatigue').textContent = record.fatigue !== undefined ? record.fatigue : '-';
+function showRecordDetail(record) {
+    const t = translations[state.currentLang];
+    const date = record.recordedDate.toDate().toLocaleDateString();
 
-    // Handle interruptionReason (show only if has content)
-    const interruptionContainer = document.getElementById('ref-interruptionReason-container');
-    const interruptionValue = document.getElementById('ref-interruptionReason');
-    if (record.interruptionReason && record.interruptionReason.trim().length > 0) {
-        interruptionContainer.classList.remove('hidden');
-        interruptionValue.textContent = record.interruptionReason;
-    } else {
-        interruptionContainer.classList.add('hidden');
-        interruptionValue.textContent = '';
+    let content = `<h3>${date} の記録</h3>`;
+    content += `<div style="text-align:left; margin-top:16px;">`;
+    content += `<p><strong>実施:</strong> ${record.carriedOut ? 'はい' : 'いいえ'}</p>`;
+
+    if (record.carriedOut) {
+        content += `<p><strong>時間帯:</strong> ${record.startedTime || '-'}</p>`;
+        content += `<p><strong>継続時間:</strong> ${record.durationTime || '-'}分</p>`;
+        content += `<p><strong>集中度:</strong> ${record.concentration || '-'}</p>`;
+        content += `<p><strong>達成感:</strong> ${record.accomplishment || '-'}</p>`;
+        content += `<p><strong>疲労感:</strong> ${record.fatigue || '-'}</p>`;
+        if (record.interrupted) {
+            content += `<p><strong>中断:</strong> あり (${record.interruptionReason || '-'})</p>`;
+        }
     }
 
-    // Handle memo (show only if has content)
-    const memoContainer = document.getElementById('ref-memo-container');
-    const memoValue = document.getElementById('ref-memo');
-    if (record.memo && record.memo.trim().length > 0) {
-        memoContainer.classList.remove('hidden');
-        memoValue.textContent = record.memo;
-    } else {
-        memoContainer.classList.add('hidden');
-        memoValue.textContent = '';
-    }
-}
+    content += `<p><strong>メモ:</strong><br>${(record.memo || '-').replace(/\n/g, '<br>')}</p>`;
+    content += `</div>`;
 
-// Reset record reference display to initial state
-function resetRecordReferenceDisplay() {
-    document.getElementById('ref-recordedDate').textContent = '-';
-    document.getElementById('ref-carriedOut').textContent = '-';
-    document.getElementById('ref-startedTime').textContent = '-';
-    document.getElementById('ref-durationTime').textContent = '-';
-    document.getElementById('ref-interrupted').textContent = '-';
-    document.getElementById('ref-concentration').textContent = '-';
-    document.getElementById('ref-accomplishment').textContent = '-';
-    document.getElementById('ref-fatigue').textContent = '-';
-    document.getElementById('ref-interruptionReason-container').classList.add('hidden');
-    document.getElementById('ref-interruptionReason').textContent = '';
-    document.getElementById('ref-memo-container').classList.add('hidden');
-    document.getElementById('ref-memo').textContent = '';
+    const detailContainer = document.getElementById('modal-record-detail');
+    detailContainer.innerHTML = content;
+    detailContainer.classList.remove('hidden');
+    document.getElementById('modal-message').classList.add('hidden');
 
-    // Clear date input
-    const dateInput = document.getElementById('record-ref-date');
-    if (dateInput) dateInput.value = '';
-    if (recordRefCalendarInstance) recordRefCalendarInstance.clear();
-}
-
-// View Record Button Handler
-const btnViewRecord = document.getElementById('btn-view-record');
-if (btnViewRecord) {
-    btnViewRecord.addEventListener('click', () => {
-        const dateInput = document.getElementById('record-ref-date');
-        clearValidationErrors();
-
-        // Validation: empty check
-        if (!dateInput.value || dateInput.value.trim() === '') {
-            showValidationError(dateInput, '必須項目です');
-            return;
-        }
-
-        // Convert input date to YYYY-MM-DD for lookup
-        const inputDateStr = dateInput.value.replace(/\//g, '-');
-
-        // Check if record exists
-        if (!currentRecordMap[inputDateStr]) {
-            showValidationError(dateInput, '記録がありません');
-            return;
-        }
-
-        // Update display with record data
-        updateRecordReferenceDisplay(currentRecordMap[inputDateStr]);
-    });
-}
-
-// Accordion close handler - reset display
-const recordRefAccordion = document.getElementById('record-reference-accordion');
-if (recordRefAccordion) {
-    recordRefAccordion.addEventListener('toggle', (e) => {
-        if (!e.target.open) {
-            resetRecordReferenceDisplay();
-            clearValidationErrors();
-        }
-    });
+    modalOverlay.classList.remove('hidden');
 }
 
 // Chart 1: Completion Rate (Donut) - Per requirements
