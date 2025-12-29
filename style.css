@@ -806,19 +806,15 @@ canvas {
     max-width: 100%;
 }
 
-/* Chart container minimum heights for readability on mobile */
+/* Chart container sizing for proper Chart.js rendering */
 .accordion-content {
+    position: relative;
     min-height: 250px;
 }
 
 @media (max-width: 767px) {
     .accordion-content {
         min-height: 300px;
-    }
-
-    /* Ensure charts have adequate height on mobile */
-    .accordion-content canvas {
-        min-height: 280px !important;
     }
 }
 

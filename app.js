@@ -1324,6 +1324,7 @@ function renderChart2(records) {
             data: { labels: [], datasets: [{ label: '作業継続スコア', data: [] }] },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     title: { display: true, text: 'データがありません', color: textSecondary },
                     legend: { labels: { color: textSecondary } }
@@ -1388,6 +1389,7 @@ function renderChart2(records) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: { labels: { color: textSecondary } },
                 title: {
@@ -1544,6 +1546,7 @@ function renderComboChart(chartId, records, metricKey, metricLabel, color) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             interaction: {
                 mode: 'index',
                 intersect: false
