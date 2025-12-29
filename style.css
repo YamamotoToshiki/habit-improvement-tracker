@@ -804,7 +804,22 @@ input[type="range"] {
    ========================================= */
 canvas {
     max-width: 100%;
-    height: auto !important;
+}
+
+/* Chart container minimum heights for readability on mobile */
+.accordion-content {
+    min-height: 250px;
+}
+
+@media (max-width: 767px) {
+    .accordion-content {
+        min-height: 300px;
+    }
+
+    /* Ensure charts have adequate height on mobile */
+    .accordion-content canvas {
+        min-height: 280px !important;
+    }
 }
 
 /* =========================================
