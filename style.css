@@ -806,12 +806,6 @@ canvas {
     max-width: 100%;
 }
 
-/* Chart container sizing for proper Chart.js rendering */
-.accordion-content {
-    position: relative;
-    min-height: 250px;
-}
-
 @media (max-width: 767px) {
     .accordion-content {
         min-height: 300px;
