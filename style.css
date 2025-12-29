@@ -808,6 +808,9 @@ canvas {
 
 /* Chart container sizing for proper Chart.js rendering */
 .accordion-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 700px;
 }
 
@@ -864,6 +867,7 @@ canvas {
 
 /* Flatpickr Customization */
 .flatpickr-calendar {
+    margin: 0 auto;
     box-shadow: none !important;
     border: 1px solid var(--border-color) !important;
 }
