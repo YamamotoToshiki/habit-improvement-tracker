@@ -1186,7 +1186,7 @@ function showRecordDetail(record) {
     content += `<p><strong>開始時間帯:</strong> ${record.startedTime || '-'}</p>`;
     content += `<p><strong>継続時間:</strong> ${record.durationTime || '-'}分</p>`;
     content += `<p><strong>中断:</strong> ${record.interrupted ? 'あり' : 'なし'}</p>`;
-    content += `<p><strong>中断理由:</strong> ${('"' + record.interruptionReason + '"' || '-').replace(/\n/g, '<br>')}</p>`;
+    content += `<p><strong>中断理由:</strong><br>${('"' + record.interruptionReason + '"' || '-').replace(/\n/g, '<br>')}</p>`;
     content += `<p><strong>集中度:</strong> ${record.concentration || '-'}</p>`;
     content += `<p><strong>達成感:</strong> ${record.accomplishment || '-'}</p>`;
     content += `<p><strong>疲労感:</strong> ${record.fatigue || '-'}</p>`;
