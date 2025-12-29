@@ -803,7 +803,6 @@ input[type="range"] {
    8. Chart.js Customization (Canvas)
    ========================================= */
 canvas {
-    margin: 0 auto;
     max-width: 100%;
 }
 
@@ -865,7 +864,6 @@ canvas {
 
 /* Flatpickr Customization */
 .flatpickr-calendar {
-    margin: 0 auto;
     box-shadow: none !important;
     border: 1px solid var(--border-color) !important;
 }
