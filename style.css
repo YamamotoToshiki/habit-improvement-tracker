@@ -804,11 +804,11 @@ input[type="range"] {
    ========================================= */
 canvas {
     max-width: 100%;
-    margin: auto;
 }
 
 /* Chart container sizing for proper Chart.js rendering */
 .accordion-content {
+    margin: auto;
     position: relative;
     height: 700px;
 }
