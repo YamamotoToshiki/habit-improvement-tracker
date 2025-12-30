@@ -1179,7 +1179,7 @@ function renderCalendar(records) {
         minDate: minDateOpt,
         maxDate: maxDateOpt,
         enable: enabledDates,  // Only allow selecting dates with records
-        monthSelectorType: 'static',  // Show year and month in header
+        monthSelectorType: 'dropdown',  // Show year and month in header
         onDayCreate: function (dObj, dStr, fp, dayElem) {
             const dateStr = getLocalYYYYMMDD(dayElem.dateObj);
             if (recordMap[dateStr]) {
