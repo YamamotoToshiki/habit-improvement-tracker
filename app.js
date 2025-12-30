@@ -1201,17 +1201,41 @@ function showRecordDetail(record) {
     const t = translations[state.currentLang];
     const date = record.recordedDate.toDate().toLocaleDateString();
 
+    // Determine display values based on conditions
+    const carriedOut = record.carriedOut;
+    const interrupted = record.interrupted;
+
+    // If carriedOut is false, show '-' for all items except 実施可否 and メモ
+    const startedTime = carriedOut ? (record.startedTime || '-') : '-';
+    const durationTime = carriedOut ? (record.durationTime ? `${record.durationTime}分` : '-') : '-';
+    const interruptedDisplay = carriedOut ? (interrupted ? 'あり' : 'なし') : '-';
+    const concentration = carriedOut ? (record.concentration || '-') : '-';
+    const accomplishment = carriedOut ? (record.accomplishment || '-') : '-';
+    const fatigue = carriedOut ? (record.fatigue || '-') : '-';
+
+    // 中断理由: '-' if carriedOut is false, or interrupted is false, or interruptionReason is empty
+    let interruptionReason = '-';
+    if (carriedOut && interrupted && record.interruptionReason && record.interruptionReason.length > 0) {
+        interruptionReason = `"${record.interruptionReason}"`.replace(/\n/g, '<br>');
+    }
+
+    // メモ: '-' if memo is empty (regardless of carriedOut)
+    let memo = '-';
+    if (record.memo && record.memo.length > 0) {
+        memo = `"${record.memo}"`.replace(/\n/g, '<br>');
+    }
+
     let content = `<h3>${date} の記録</h3>`;
     content += `<div style="text-align:left; margin-top:16px;">`;
-    content += `<p><strong>実施可否:</strong> ${record.carriedOut ? 'はい' : 'いいえ'}</p>`;
-    content += `<p><strong>開始時間帯:</strong> ${record.startedTime || '-'}</p>`;
-    content += `<p><strong>継続時間:</strong> ${record.durationTime || '-'}分</p>`;
-    content += `<p><strong>中断:</strong> ${record.interrupted ? 'あり' : 'なし'}</p>`;
-    content += `<p><strong>中断理由:</strong><br>${('"' + record.interruptionReason + '"' || '-').replace(/\n/g, '<br>')}</p>`;
-    content += `<p><strong>集中度:</strong> ${record.concentration || '-'}</p>`;
-    content += `<p><strong>達成感:</strong> ${record.accomplishment || '-'}</p>`;
-    content += `<p><strong>疲労感:</strong> ${record.fatigue || '-'}</p>`;
-    content += `<p><strong>メモ:</strong><br>${('"' + record.memo + '"' || '-').replace(/\n/g, '<br>')}</p>`;
+    content += `<p><strong>実施可否:</strong> ${carriedOut ? 'はい' : 'いいえ'}</p>`;
+    content += `<p><strong>開始時間帯:</strong> ${startedTime}</p>`;
+    content += `<p><strong>継続時間:</strong> ${durationTime}</p>`;
+    content += `<p><strong>中断:</strong> ${interruptedDisplay}</p>`;
+    content += `<p><strong>中断理由:</strong><br>${interruptionReason}</p>`;
+    content += `<p><strong>集中度:</strong> ${concentration}</p>`;
+    content += `<p><strong>達成感:</strong> ${accomplishment}</p>`;
+    content += `<p><strong>疲労感:</strong> ${fatigue}</p>`;
+    content += `<p><strong>メモ:</strong><br>${memo}</p>`;
     content += `</div>`;
 
     const detailContainer = document.getElementById('modal-record-detail');
