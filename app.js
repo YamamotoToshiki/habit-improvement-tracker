@@ -365,6 +365,14 @@ function switchView(viewName) {
         if (calendarContainer) calendarContainer.classList.add('hidden');
         // Close all graph accordions
         document.querySelectorAll('#view-results details.accordion-item').forEach(el => el.removeAttribute('open'));
+        // Clear date input and selected record
+        const dateInput = document.getElementById('record-date-input');
+        if (dateInput) {
+            dateInput.value = '';
+            // Close flatpickr if open
+            if (calendarInstance) calendarInstance.close();
+        }
+        selectedRecordForView = null;
     }
 }
 
