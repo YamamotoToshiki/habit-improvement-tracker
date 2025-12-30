@@ -781,6 +781,8 @@ input[type="range"] {
     border-radius: var(--border-radius-lg);
     width: 90%;
     max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
     box-shadow: var(--shadow-lg);
     transform: translateY(0);
     transition: transform 0.3s ease;
@@ -795,6 +797,13 @@ input[type="range"] {
     margin-bottom: var(--space-lg);
     font-size: var(--font-size-lg);
     color: var(--text-primary);
+}
+
+/* Record Detail Modal - scrollable content with padding */
+#modal-record-detail {
+    padding: var(--space-md);
+    max-height: calc(80vh - 120px);
+    overflow-y: auto;
 }
 
 /* Tooltips */
