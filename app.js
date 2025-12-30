@@ -1082,28 +1082,7 @@ async function updateResultInfo(experimentId, records) {
     }
 }
 
-// Toggle Calendar
-const calendarToggleBtn = document.getElementById('btn-calendar-toggle');
-
-if (calendarToggleBtn) {
-    calendarToggleBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const container = document.getElementById('result-calendar-container');
-        if (container) {
-            container.classList.toggle('hidden');
-            if (!container.classList.contains('hidden')) {
-                const expId = document.getElementById('result-experiment-select')?.value;
-                const records = expId && experimentCache[expId] ? experimentCache[expId] : [];
-                if (calendarInstance) {
-                    if (typeof calendarInstance.redraw === 'function') calendarInstance.redraw();
-                    else if (typeof calendarInstance.jumpToDate === 'function') calendarInstance.jumpToDate(new Date());
-                } else {
-                    renderCalendar(records);
-                }
-            }
-        }
-    });
-}
+// Calendar Logic (triggered by date input field)
 
 // Calendar Logic
 function renderCalendar(records) {
