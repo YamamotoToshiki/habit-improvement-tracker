@@ -1176,10 +1176,10 @@ function renderCalendar(records) {
     calendarInstance = flatpickr(recordDateInput, {
         locale: 'ja',
         dateFormat: "Y-m-d",
+        monthSelectorType: 'dropdown',  // Enable year and month dropdown selectors
         minDate: minDateOpt,
         maxDate: maxDateOpt,
         enable: enabledDates,  // Only allow selecting dates with records
-        monthSelectorType: 'dropdown',  // Show year and month in header
         onDayCreate: function (dObj, dStr, fp, dayElem) {
             const dateStr = getLocalYYYYMMDD(dayElem.dateObj);
             if (recordMap[dateStr]) {
