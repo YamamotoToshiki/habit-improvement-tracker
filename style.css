@@ -906,15 +906,3 @@ canvas {
 .day-failure {
     background-color: rgba(239, 68, 68, 0.1) !important;
 }
-
-/* Flatpickr Customization */
-.flatpickr-calendar {
-    margin: 0 auto;
-    box-shadow: none !important;
-    border: 1px solid var(--border-color) !important;
-}
-
-.flatpickr-current-month {
-    width: auto !important;
-    min-width: 120px;
-}
