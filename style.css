@@ -906,3 +906,9 @@ canvas {
 .day-failure {
     background-color: rgba(239, 68, 68, 0.1) !important;
 }
+
+/* Flatpickr year input - override global input styles */
+.flatpickr-current-month input.cur-year {
+    display: inline-block;
+    width: auto;
+}
