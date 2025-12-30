@@ -1,4 +1,4 @@
-import { auth, db, googleProvider, messaging, getToken, onMessage, VAPID_KEY, signInWithRedirect, getRedirectResult } from './firebase-config.js';
+import { auth, db, googleProvider, messaging, getToken, onMessage, VAPID_KEY, signInWithRedirect, getRedirectResult, deleteField } from './firebase-config.js';
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, setDoc, doc, Timestamp, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
@@ -930,6 +930,23 @@ document.getElementById('btn-save-record').addEventListener('click', async () =>
         if (!existingSnapshot.empty) {
             // Record exists for today - UPDATE it
             const existingDocId = existingSnapshot.docs[0].id;
+            const existingData = existingSnapshot.docs[0].data();
+
+            // Check if carriedOut changed from true to false - delete related fields
+            if (existingData.carriedOut === true && carriedOut === false) {
+                recordData.startedTime = deleteField();
+                recordData.durationTime = deleteField();
+                recordData.interrupted = deleteField();
+                recordData.interruptionReason = deleteField();
+                recordData.concentration = deleteField();
+                recordData.accomplishment = deleteField();
+                recordData.fatigue = deleteField();
+            }
+            // Check if interrupted changed from true to false - delete interruptionReason
+            else if (carriedOut && existingData.interrupted === true && !document.getElementById('record-interrupted').checked) {
+                recordData.interruptionReason = deleteField();
+            }
+
             await updateDoc(doc(db, "records", existingDocId), recordData);
             currentRecordId = existingDocId;
             console.log("Record updated:", existingDocId);
