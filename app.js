@@ -1182,12 +1182,16 @@ function renderCalendar(records) {
         maxDateOpt = parseLocal(parts[1]);
     }
 
+    // Get list of dates that have records (for enabling only those dates)
+    const enabledDates = Object.keys(recordMap);
+
     calendarInstance = flatpickr(calendarEl, {
         inline: true,
         locale: 'ja',
         dateFormat: "Y-m-d",
         minDate: minDateOpt,
         maxDate: maxDateOpt,
+        enable: enabledDates,  // Only allow selecting dates with records
         onDayCreate: function (dObj, dStr, fp, dayElem) {
             const dateStr = getLocalYYYYMMDD(dayElem.dateObj);
             if (recordMap[dateStr]) {
