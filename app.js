@@ -538,8 +538,22 @@ strategySelect.addEventListener('change', (e) => {
     }
 });
 
+// Auto-resize textarea helper function
+function autoResizeTextarea(textarea) {
+    // Store the initial height based on rows attribute
+    if (!textarea.dataset.initialHeight) {
+        textarea.dataset.initialHeight = textarea.scrollHeight;
+    }
+    // Reset to auto to get proper scrollHeight
+    textarea.style.height = 'auto';
+    // Set height to scrollHeight, but not less than initial height
+    const minHeight = parseInt(textarea.dataset.initialHeight) || textarea.scrollHeight;
+    textarea.style.height = Math.max(textarea.scrollHeight, minHeight) + 'px';
+}
+
 actionInput.addEventListener('input', (e) => {
     actionCharCount.textContent = e.target.value.length;
+    autoResizeTextarea(e.target);
 });
 
 // Save Experiment
@@ -863,6 +877,7 @@ document.getElementById('record-interrupted').addEventListener('change', (e) => 
 
 document.getElementById('record-memo').addEventListener('input', (e) => {
     document.getElementById('memo-char-count').textContent = e.target.value.length;
+    autoResizeTextarea(e.target);
 });
 
 document.getElementById('btn-edit-record').addEventListener('click', () => {

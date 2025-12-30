@@ -345,6 +345,13 @@ select:disabled {
     /* Slightly darker for disabled */
 }
 
+/* Auto-resizing textareas */
+textarea {
+    resize: none;
+    overflow-y: hidden;
+    min-height: auto;
+}
+
 /* Character Count */
 .char-count {
     text-align: right;
