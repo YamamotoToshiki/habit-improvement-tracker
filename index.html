@@ -253,7 +253,16 @@
                     <p><strong>状態:</strong> <span id="res-status">---</span></p>
                 </div>
 
-                <!-- Calendar Area (Hidden by default or toggled) -->
+                <!-- Date Selection for Record View -->
+                <div class="record-view-section">
+                    <div class="form-group">
+                        <label for="record-date-input">日次記録参照</label>
+                        <input type="text" id="record-date-input" placeholder="日付を選択..." readonly>
+                    </div>
+                    <button type="button" id="btn-view-record" class="btn-primary">記録を参照</button>
+                </div>
+
+                <!-- Calendar Area (Hidden by default, toggled by date input) -->
                 <div id="result-calendar-container" class="calendar-container hidden">
                     <div id="calendar-placeholder"></div>
                 </div>

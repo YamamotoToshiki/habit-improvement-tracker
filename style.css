@@ -610,6 +610,39 @@ input[type="range"] {
     color: var(--color-primary);
 }
 
+/* Record View Section (Date Input + Button) */
+.record-view-section {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-end;
+    margin-bottom: var(--space-lg);
+}
+
+.record-view-section .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.record-view-section #record-date-input {
+    cursor: pointer;
+}
+
+.record-view-section #btn-view-record {
+    flex-shrink: 0;
+    height: 46px;
+}
+
+@media (max-width: 767px) {
+    .record-view-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .record-view-section #btn-view-record {
+        width: 100%;
+    }
+}
+
 .calendar-container {
     background-color: var(--bg-card);
     padding: var(--space-md);
