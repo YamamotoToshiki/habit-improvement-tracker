@@ -1083,6 +1083,63 @@ async function updateResultInfo(experimentId, records) {
 }
 
 // Calendar Logic (triggered by date input field)
+const recordDateInput = document.getElementById('record-date-input');
+const viewRecordBtn = document.getElementById('btn-view-record');
+
+// Store selected record for view button
+let selectedRecordForView = null;
+
+// Toggle calendar when date input is clicked
+if (recordDateInput) {
+    recordDateInput.addEventListener('click', (e) => {
+        e.preventDefault();
+        const container = document.getElementById('result-calendar-container');
+        if (container) {
+            container.classList.toggle('hidden');
+            if (!container.classList.contains('hidden')) {
+                const expId = document.getElementById('result-experiment-select')?.value;
+                const records = expId && experimentCache[expId] ? experimentCache[expId] : [];
+                if (calendarInstance) {
+                    if (typeof calendarInstance.redraw === 'function') calendarInstance.redraw();
+                    else if (typeof calendarInstance.jumpToDate === 'function') calendarInstance.jumpToDate(new Date());
+                } else {
+                    renderCalendar(records);
+                }
+            }
+        }
+    });
+}
+
+// View record button click handler
+if (viewRecordBtn) {
+    viewRecordBtn.addEventListener('click', () => {
+        // Clear previous error tooltip
+        const existingTooltip = viewRecordBtn.parentElement.querySelector('.tooltip-error');
+        if (existingTooltip) existingTooltip.remove();
+
+        // Validate: check if date is selected
+        if (!recordDateInput || !recordDateInput.value.trim()) {
+            // Show error tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip-error';
+            tooltip.textContent = '日付が入力されていません';
+            tooltip.style.position = 'absolute';
+            tooltip.style.top = '-40px';
+            tooltip.style.left = '0';
+            recordDateInput.parentElement.style.position = 'relative';
+            recordDateInput.parentElement.appendChild(tooltip);
+
+            // Auto-hide after 3 seconds
+            setTimeout(() => tooltip.remove(), 3000);
+            return;
+        }
+
+        // Show record modal if record exists
+        if (selectedRecordForView) {
+            showRecordDetail(selectedRecordForView);
+        }
+    });
+}
 
 // Calendar Logic
 function renderCalendar(records) {
@@ -1148,9 +1205,20 @@ function renderCalendar(records) {
             }
         },
         onChange: function (selectedDates, dateStr, instance) {
-            if (recordMap[dateStr]) {
-                showRecordDetail(recordMap[dateStr]);
+            // Set the date in the input field instead of showing modal directly
+            if (recordDateInput) {
+                const displayDate = selectedDates[0] ? selectedDates[0].toLocaleDateString('ja-JP') : dateStr;
+                recordDateInput.value = displayDate;
             }
+            // Store the record for view button
+            if (recordMap[dateStr]) {
+                selectedRecordForView = recordMap[dateStr];
+            } else {
+                selectedRecordForView = null;
+            }
+            // Hide calendar after selection
+            const container = document.getElementById('result-calendar-container');
+            if (container) container.classList.add('hidden');
         }
     });
 }
