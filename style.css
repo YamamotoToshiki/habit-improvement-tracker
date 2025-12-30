@@ -904,19 +904,3 @@ canvas {
     box-shadow: none !important;
     border: 1px solid var(--border-color) !important;
 }
-
-/* Show year in flatpickr header (e.g., "2025年12月") */
-.flatpickr-current-month .numInputWrapper {
-    display: inline-block !important;
-    width: auto !important;
-}
-
-.flatpickr-current-month .numInputWrapper span.arrowUp,
-.flatpickr-current-month .numInputWrapper span.arrowDown {
-    display: none;
-}
-
-.flatpickr-current-month input.cur-year {
-    font-weight: 600;
-    pointer-events: none;
-}

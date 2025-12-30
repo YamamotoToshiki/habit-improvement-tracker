@@ -1089,27 +1089,6 @@ const viewRecordBtn = document.getElementById('btn-view-record');
 // Store selected record for view button
 let selectedRecordForView = null;
 
-// Toggle calendar when date input is clicked
-if (recordDateInput) {
-    recordDateInput.addEventListener('click', (e) => {
-        e.preventDefault();
-        const container = document.getElementById('result-calendar-container');
-        if (container) {
-            container.classList.toggle('hidden');
-            if (!container.classList.contains('hidden')) {
-                const expId = document.getElementById('result-experiment-select')?.value;
-                const records = expId && experimentCache[expId] ? experimentCache[expId] : [];
-                if (calendarInstance) {
-                    if (typeof calendarInstance.redraw === 'function') calendarInstance.redraw();
-                    else if (typeof calendarInstance.jumpToDate === 'function') calendarInstance.jumpToDate(new Date());
-                } else {
-                    renderCalendar(records);
-                }
-            }
-        }
-    });
-}
-
 // View record button click handler
 if (viewRecordBtn) {
     viewRecordBtn.addEventListener('click', () => {
@@ -1141,9 +1120,9 @@ if (viewRecordBtn) {
     });
 }
 
-// Calendar Logic
+// Calendar Logic - attaches flatpickr to date input field
 function renderCalendar(records) {
-    const calendarEl = document.getElementById('calendar-placeholder');
+    if (!recordDateInput) return;
 
     // Helper to get YYYY-MM-DD in local time
     const getLocalYYYYMMDD = (date) => {
@@ -1185,10 +1164,12 @@ function renderCalendar(records) {
     // Get list of dates that have records (for enabling only those dates)
     const enabledDates = Object.keys(recordMap);
 
-    calendarInstance = flatpickr(calendarEl, {
-        inline: true,
+    // Attach flatpickr directly to date input (standard overlay mode)
+    calendarInstance = flatpickr(recordDateInput, {
         locale: 'ja',
-        dateFormat: "Y-m-d",
+        dateFormat: "Y/m/d",
+        altInput: true,
+        altFormat: "Y年n月j日",
         minDate: minDateOpt,
         maxDate: maxDateOpt,
         enable: enabledDates,  // Only allow selecting dates with records
@@ -1204,25 +1185,16 @@ function renderCalendar(records) {
                     dayElem.classList.add('day-failure');
                     dayElem.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
                     dayElem.style.borderColor = 'var(--color-danger)';
-
                 }
             }
         },
         onChange: function (selectedDates, dateStr, instance) {
-            // Set the date in the input field instead of showing modal directly
-            if (recordDateInput) {
-                const displayDate = selectedDates[0] ? selectedDates[0].toLocaleDateString('ja-JP') : dateStr;
-                recordDateInput.value = displayDate;
-            }
             // Store the record for view button
             if (recordMap[dateStr]) {
                 selectedRecordForView = recordMap[dateStr];
             } else {
                 selectedRecordForView = null;
             }
-            // Hide calendar after selection
-            const container = document.getElementById('result-calendar-container');
-            if (container) container.classList.add('hidden');
         }
     });
 }
