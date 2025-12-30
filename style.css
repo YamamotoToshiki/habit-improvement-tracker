@@ -913,3 +913,8 @@ canvas {
     box-shadow: none !important;
     border: 1px solid var(--border-color) !important;
 }
+
+.flatpickr-current-month {
+    width: auto !important;
+    min-width: 120px;
+}
