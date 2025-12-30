@@ -905,7 +905,7 @@ canvas {
     border: 1px solid var(--border-color) !important;
 }
 
-/* Show year in flatpickr header (e.g., "2025”N12ŒŽ") */
+/* Show year in flatpickr header (e.g., "2025å¹´12æœˆ") */
 .flatpickr-current-month .numInputWrapper {
     display: inline-block !important;
     width: auto !important;
