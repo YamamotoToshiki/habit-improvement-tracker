@@ -1176,7 +1176,6 @@ function renderCalendar(records) {
     calendarInstance = flatpickr(recordDateInput, {
         locale: 'ja',
         dateFormat: "Y-m-d",
-        monthSelectorType: 'dropdown',  // Enable year and month dropdown selectors
         minDate: minDateOpt,
         maxDate: maxDateOpt,
         enable: enabledDates,  // Only allow selecting dates with records

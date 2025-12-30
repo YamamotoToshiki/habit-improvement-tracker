@@ -913,3 +913,13 @@ canvas {
     box-shadow: none !important;
     border: 1px solid var(--border-color) !important;
 }
+
+/* Show year in flatpickr header */
+.flatpickr-current-month .numInputWrapper {
+    display: inline-block !important;
+}
+
+.flatpickr-current-month .cur-year {
+    display: inline !important;
+    font-weight: bold;
+}
