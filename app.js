@@ -1137,7 +1137,7 @@ function renderCalendar(records) {
         const y = date.getFullYear();
         const m = String(date.getMonth() + 1).padStart(2, '0');
         const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        return `${y}/${m}/${d}`;
     };
 
     // Map records to a dictionary for easy lookup by date string "YYYY-MM-DD"
@@ -1176,6 +1176,8 @@ function renderCalendar(records) {
     calendarInstance = flatpickr(recordDateInput, {
         locale: 'ja',
         dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: 'Y/m/d',
         minDate: minDateOpt,
         maxDate: maxDateOpt,
         enable: enabledDates,  // Only allow selecting dates with records
