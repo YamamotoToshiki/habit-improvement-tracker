@@ -1167,7 +1167,7 @@ function renderCalendar(records) {
     // Attach flatpickr directly to date input (standard overlay mode)
     calendarInstance = flatpickr(recordDateInput, {
         locale: 'ja',
-        dateFormat: "Y/m/d",
+        dateFormat: "Y-m-d",
         minDate: minDateOpt,
         maxDate: maxDateOpt,
         enable: enabledDates,  // Only allow selecting dates with records
