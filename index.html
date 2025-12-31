@@ -157,9 +157,13 @@
                 </div>
 
                 <form id="form-record">
-                    <div class="form-group checkbox-group">
-                        <label for="record-carried-out">作業実施可否</label>
-                        <input type="checkbox" id="record-carried-out" name="carriedOut">
+                    <div class="form-group toggle-group">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="record-carried-out" name="carriedOut">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label"
+                            onclick="document.getElementById('record-carried-out').click()">作業実施可否</span>
                     </div>
 
                     <div id="record-details-container" class="disabled-section">
@@ -186,9 +190,13 @@
                             </select>
                         </div>
 
-                        <div class="form-group checkbox-group">
-                            <label for="record-interrupted">中断の有無</label>
-                            <input type="checkbox" id="record-interrupted" name="interrupted" disabled>
+                        <div class="form-group toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="record-interrupted" name="interrupted" disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label"
+                                onclick="document.getElementById('record-interrupted').click()">中断の有無</span>
                         </div>
 
                         <div id="interruption-custom" class="disabled-section">

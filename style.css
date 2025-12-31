@@ -468,7 +468,78 @@ button:disabled {
     }
 }
 
-/* Checkbox */
+/* Toggle Switch - Modern toggle replacing checkbox */
+.toggle-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.toggle-switch {
+    position: relative;
+    width: 56px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--text-tertiary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 32px;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    box-shadow: 0 0 16px rgba(43, 200, 228, 0.4);
+}
+
+.toggle-switch input:checked+.toggle-slider::before {
+    transform: translateX(24px);
+}
+
+.toggle-switch input:focus+.toggle-slider {
+    box-shadow: 0 0 0 4px rgba(0, 163, 191, 0.2);
+}
+
+.toggle-switch input:disabled+.toggle-slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.toggle-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Legacy checkbox support */
 .checkbox-group {
     display: flex;
     align-items: center;
@@ -480,7 +551,7 @@ button:disabled {
     cursor: pointer;
 }
 
-input[type="checkbox"] {
+input[type="checkbox"]:not(.toggle-switch input) {
     width: 20px;
     height: 20px;
     cursor: pointer;
