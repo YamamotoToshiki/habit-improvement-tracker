@@ -24,7 +24,7 @@ const translations = {
             labels: {
                 strategy: "介入策選択",
                 strategyCustom: "介入策入力（その他選択時）",
-                action: "具体的行動",
+                action: "介入策の詳細",
                 duration: "実験期間（日）",
                 notification: "通知時刻"
             },
