@@ -365,7 +365,7 @@ textarea {
     margin-top: var(--space-xs);
 }
 
-/* Buttons */
+/* Buttons - Enhanced with gradients and effects */
 .btn-primary,
 .btn-secondary,
 .btn-danger {
@@ -373,41 +373,72 @@ textarea {
     border-radius: var(--border-radius-md);
     font-weight: 600;
     font-size: var(--font-size-base);
-    transition: all var(--transition-base);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 120px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
-    background-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
     color: var(--text-btn);
+    border: none;
+    box-shadow:
+        0 4px 12px rgba(0, 163, 191, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover:not(:disabled) {
-    background-color: var(--color-secondary);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 20px rgba(0, 163, 191, 0.4),
+        0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+    box-shadow:
+        0 2px 8px rgba(0, 163, 191, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary {
     background-color: transparent;
-    border: 1px solid var(--color-secondary);
+    border: 2px solid var(--color-secondary);
     color: var(--color-secondary);
+    box-shadow: 0 2px 8px rgba(43, 200, 228, 0.1);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background-color: rgba(43, 200, 228, 0.1);
+    background-color: rgba(43, 200, 228, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(43, 200, 228, 0.25);
+}
+
+.btn-secondary:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
 }
 
 .btn-danger {
     background-color: transparent;
-    border: 1px solid var(--color-danger);
+    border: 2px solid var(--color-danger);
     color: var(--color-danger);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
 }
 
 .btn-danger:hover:not(:disabled) {
-    background-color: rgba(239, 68, 68, 0.1);
+    background-color: rgba(239, 68, 68, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn-danger:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
 }
 
 button:disabled {
