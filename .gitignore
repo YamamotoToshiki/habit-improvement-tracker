@@ -1,5 +1,3 @@
-ui-mockup.html
-
 # requirements
 habit-tracker-requirements.md
 
@@ -77,3 +75,4 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+ui-mockup.html
