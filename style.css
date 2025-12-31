@@ -376,49 +376,92 @@ textarea {
     margin-top: var(--space-xs);
 }
 
-/* Buttons */
+/* Buttons - Enhanced with gradients and effects */
 .btn-primary,
 .btn-secondary,
 .btn-danger {
-    padding: 12px 24px;
+    padding: 14px 28px;
+    border: none;
     border-radius: var(--border-radius-md);
     font-weight: 600;
     font-size: var(--font-size-base);
+    cursor: pointer;
     transition: all var(--transition-base);
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: var(--space-sm);
     min-width: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Ripple effect base */
+.btn-primary::after,
+.btn-secondary::after,
+.btn-danger::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:active::after,
+.btn-secondary:active::after,
+.btn-danger:active::after {
+    width: 300px;
+    height: 300px;
 }
 
 .btn-primary {
-    background-color: var(--color-primary);
+    background: var(--gradient-primary);
     color: var(--text-btn);
+    box-shadow: var(--shadow-md);
 }
 
 .btn-primary:hover:not(:disabled) {
-    background-color: var(--color-secondary);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .btn-secondary {
-    background-color: transparent;
-    border: 1px solid var(--color-secondary);
+    background: transparent;
+    border: 2px solid var(--color-secondary);
     color: var(--color-secondary);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background-color: rgba(43, 200, 228, 0.1);
+    background: rgba(43, 200, 228, 0.1);
+    transform: translateY(-2px);
+}
+
+.btn-secondary:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .btn-danger {
-    background-color: transparent;
-    border: 1px solid var(--color-danger);
+    background: transparent;
+    border: 2px solid var(--color-danger);
     color: var(--color-danger);
 }
 
 .btn-danger:hover:not(:disabled) {
-    background-color: rgba(239, 68, 68, 0.1);
+    background: rgba(239, 68, 68, 0.1);
+    transform: translateY(-2px);
+}
+
+.btn-danger:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 button:disabled {
