@@ -157,82 +157,113 @@
                 </div>
 
                 <form id="form-record">
-                    <div class="form-group toggle-group">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="record-carried-out" name="carriedOut">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span class="toggle-label"
-                            onclick="document.getElementById('record-carried-out').click()">作業実施可否</span>
-                    </div>
-
-                    <div id="record-details-container" class="disabled-section">
-                        <div class="form-group">
-                            <label for="record-started-time" class="required">作業開始時間帯</label>
-                            <select id="record-started-time" name="startedTime" disabled>
-                                <option value="深夜">深夜 (0:00-2:59)</option>
-                                <option value="早朝">早朝 (3:00-5:59)</option>
-                                <option value="朝">朝 (6:00-8:59)</option>
-                                <option value="昼">昼 (9:00-14:59)</option>
-                                <option value="夕方">夕方 (15:00-17:59)</option>
-                                <option value="夜">夜 (18:00-23:59)</option>
-                            </select>
+                    <!-- 基本情報 セクション -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                            基本情報
                         </div>
-
-                        <div class="form-group">
-                            <label for="record-duration" class="required">作業継続時間</label>
-                            <select id="record-duration" name="durationTime" disabled>
-                                <option value="5">5分</option>
-                                <option value="15">15分</option>
-                                <option value="30" selected>30分</option>
-                                <option value="60">1時間</option>
-                                <option value="180">3時間</option>
-                            </select>
-                        </div>
-
                         <div class="form-group toggle-group">
                             <label class="toggle-switch">
-                                <input type="checkbox" id="record-interrupted" name="interrupted" disabled>
+                                <input type="checkbox" id="record-carried-out" name="carriedOut">
                                 <span class="toggle-slider"></span>
                             </label>
                             <span class="toggle-label"
-                                onclick="if(!this.previousElementSibling.querySelector('input').disabled) this.previousElementSibling.querySelector('input').click()">中断の有無</span>
-                        </div>
-
-                        <div id="interruption-custom" class="disabled-section">
-                            <div class="form-group">
-                                <label for="record-interruption-reason">中断の主な理由</label>
-                                <input type="text" id="record-interruption-reason" name="interruptionReason"
-                                    maxlength="50" disabled placeholder="最大50文字">
-                            </div>
-                        </div>
-
-                        <div class="form-group slider-group">
-                            <label for="record-concentration" class="required">集中度 (1-5)</label>
-                            <input type="range" id="record-concentration" name="concentration" min="1" max="5" value="3"
-                                disabled>
-                            <span class="slider-value" id="val-concentration">3</span>
-                        </div>
-
-                        <div class="form-group slider-group">
-                            <label for="record-accomplishment" class="required">達成感 (1-5)</label>
-                            <input type="range" id="record-accomplishment" name="accomplishment" min="1" max="5"
-                                value="3" disabled>
-                            <span class="slider-value" id="val-accomplishment">3</span>
-                        </div>
-
-                        <div class="form-group slider-group">
-                            <label for="record-fatigue" class="required">疲労感 (1-5)</label>
-                            <input type="range" id="record-fatigue" name="fatigue" min="1" max="5" value="3" disabled>
-                            <span class="slider-value" id="val-fatigue">3</span>
+                                onclick="document.getElementById('record-carried-out').click()">作業実施可否</span>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="record-memo">メモ</label>
-                        <textarea id="record-memo" name="memo" maxlength="2000" rows="3"
-                            placeholder="最大2,000文字"></textarea>
-                        <div class="char-count"><span id="memo-char-count">0</span> / 2,000</div>
+                    <div id="record-details-container" class="disabled-section">
+                        <!-- 詳細情報 セクション -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fa-solid fa-circle-info"></i>
+                                詳細情報
+                            </div>
+                            <div class="form-group">
+                                <label for="record-started-time">作業開始時間帯 <span class="badge-required">必須</span></label>
+                                <select id="record-started-time" name="startedTime" disabled>
+                                    <option value="深夜">深夜 (0:00-2:59)</option>
+                                    <option value="早朝">早朝 (3:00-5:59)</option>
+                                    <option value="朝">朝 (6:00-8:59)</option>
+                                    <option value="昼">昼 (9:00-14:59)</option>
+                                    <option value="夕方">夕方 (15:00-17:59)</option>
+                                    <option value="夜">夜 (18:00-23:59)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="record-duration">作業継続時間 <span class="badge-required">必須</span></label>
+                                <select id="record-duration" name="durationTime" disabled>
+                                    <option value="5">5分</option>
+                                    <option value="15">15分</option>
+                                    <option value="30" selected>30分</option>
+                                    <option value="60">1時間</option>
+                                    <option value="180">3時間</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group toggle-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="record-interrupted" name="interrupted" disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-label"
+                                    onclick="if(!this.previousElementSibling.querySelector('input').disabled) this.previousElementSibling.querySelector('input').click()">中断の有無
+                                    <span class="badge-optional">任意</span></span>
+                            </div>
+
+                            <div id="interruption-custom" class="disabled-section">
+                                <div class="form-group">
+                                    <label for="record-interruption-reason">中断の主な理由 <span
+                                            class="badge-optional">任意</span></label>
+                                    <input type="text" id="record-interruption-reason" name="interruptionReason"
+                                        maxlength="50" disabled placeholder="最大50文字">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 自己評価 セクション -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fa-solid fa-chart-simple"></i>
+                                自己評価 (1-5)
+                            </div>
+                            <div class="form-group slider-group">
+                                <label for="record-concentration">集中度 <span class="badge-required">必須</span></label>
+                                <input type="range" id="record-concentration" name="concentration" min="1" max="5"
+                                    value="3" disabled>
+                                <span class="slider-value" id="val-concentration">3</span>
+                            </div>
+
+                            <div class="form-group slider-group">
+                                <label for="record-accomplishment">達成感 <span class="badge-required">必須</span></label>
+                                <input type="range" id="record-accomplishment" name="accomplishment" min="1" max="5"
+                                    value="3" disabled>
+                                <span class="slider-value" id="val-accomplishment">3</span>
+                            </div>
+
+                            <div class="form-group slider-group">
+                                <label for="record-fatigue">疲労感 <span class="badge-required">必須</span></label>
+                                <input type="range" id="record-fatigue" name="fatigue" min="1" max="5" value="3"
+                                    disabled>
+                                <span class="slider-value" id="val-fatigue">3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- メモ セクション -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            メモ
+                        </div>
+                        <div class="form-group">
+                            <label for="record-memo">メモ <span class="badge-optional">任意</span></label>
+                            <textarea id="record-memo" name="memo" maxlength="2000" rows="3"
+                                placeholder="最大2,000文字"></textarea>
+                            <div class="char-count"><span id="memo-char-count">0</span> / 2,000</div>
+                        </div>
                     </div>
 
                     <div class="form-actions">

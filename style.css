@@ -303,19 +303,71 @@ button {
     /* For tooltips */
 }
 
-label {
-    display: block;
-    margin-bottom: var(--space-sm);
+.form-group label {
     font-weight: 500;
     color: var(--text-secondary);
 }
 
-.required::after {
-    content: " *";
-    color: var(--color-danger);
+/* Form Card Sections for categorization */
+.form-section {
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 163, 191, 0.15);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.form-section-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid rgba(0, 163, 191, 0.2);
+}
+
+.form-section-title i {
+    color: var(--color-primary);
+    font-size: 18px;
+}
+
+/* Required/Optional Badges */
+.badge-required,
+.badge-optional {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: var(--space-sm);
     vertical-align: middle;
 }
 
+.badge-required {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-optional {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Legacy required indicator - hidden, use badges instead */
+.required::after {
+    display: none;
+}
+
+/* Enhanced Input Styles with Focus Animation */
 input[type="text"],
 input[type="number"],
 input[type="time"],
@@ -325,13 +377,13 @@ select {
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
-    padding: 12px var(--space-md);
+    padding: 14px var(--space-md);
     background-color: var(--bg-input);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     border-radius: var(--border-radius-md);
     color: var(--text-primary);
     font-size: var(--font-size-base);
-    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    transition: all var(--transition-base);
 }
 
 /* Align the width and left-align the text */
@@ -348,8 +400,19 @@ input[type="time"]::-webkit-date-and-time-value {
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 0 3px rgba(43, 200, 228, 0.2);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(0, 163, 191, 0.15), var(--shadow-glow);
+    outline: none;
+}
+
+/* Custom Select Arrow */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300A3BF' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
 }
 
 input:disabled,
