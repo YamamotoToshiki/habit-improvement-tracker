@@ -362,11 +362,6 @@ button {
     border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
-/* Legacy required indicator - hidden, use badges instead */
-.required::after {
-    display: none;
-}
-
 /* Enhanced Input Styles with Focus Animation */
 input[type="text"],
 input[type="number"],
