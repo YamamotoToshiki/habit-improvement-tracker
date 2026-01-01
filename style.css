@@ -246,6 +246,17 @@ button {
     font-weight: 500;
     transition: all var(--transition-base);
     font-size: var(--font-size-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* Ensure icons in nav buttons display correctly */
+.nav-btn i {
+    font-size: 14px;
+    display: inline-block;
+    width: 1em;
+    text-align: center;
 }
 
 .nav-btn:hover {
