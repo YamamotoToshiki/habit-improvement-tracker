@@ -1867,8 +1867,8 @@ function applyTranslations(lang) {
     document.getElementById('setting-strategy-custom').placeholder = t.settings.placeholders.strategyCustom;
     document.getElementById('setting-action').placeholder = t.settings.placeholders.action;
 
-    document.getElementById('btn-save-experiment').textContent = t.settings.buttons.save;
-    document.getElementById('btn-end-experiment').textContent = t.settings.buttons.end;
+    document.getElementById('btn-save-experiment').innerHTML = `<i class="fa-solid fa-floppy-disk"></i>${t.settings.buttons.save}`;
+    document.getElementById('btn-end-experiment').innerHTML = `<i class="fa-solid fa-flag-checkered"></i>${t.settings.buttons.end}`;
 
     // Record View
     document.querySelector('#view-record h2').textContent = t.record.title;
@@ -1884,13 +1884,13 @@ function applyTranslations(lang) {
     document.querySelector('label[for="record-fatigue"]').textContent = t.record.labels.fatigue;
     document.querySelector('label[for="record-memo"]').textContent = t.record.labels.memo;
 
-    document.getElementById('btn-save-record').textContent = t.record.buttons.save;
-    document.getElementById('btn-edit-record').textContent = t.record.buttons.edit;
+    document.getElementById('btn-save-record').innerHTML = `<i class="fa-solid fa-floppy-disk"></i>${t.record.buttons.save}`;
+    document.getElementById('btn-edit-record').innerHTML = `<i class="fa-solid fa-pen"></i>${t.record.buttons.edit}`;
 
     // Results View
     document.querySelector('#view-results h2').textContent = t.results.title;
     document.querySelector('label[for="result-experiment-select"]').textContent = t.results.labels.experimentSelect;
-    document.getElementById('btn-export-data').textContent = t.results.buttons.export;
+    document.getElementById('btn-export-data').innerHTML = `<i class="fa-solid fa-download"></i>${t.results.buttons.export}`;
 
     // Library View
     document.querySelector('#view-library h2').textContent = t.library.title;

@@ -253,7 +253,7 @@ button {
 
 /* Ensure icons in nav buttons display correctly */
 .nav-btn i {
-    font-size: 14px;
+    font-size: 18px;
     display: inline-block;
     width: 1em;
     text-align: center;
