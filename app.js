@@ -1928,10 +1928,6 @@ function applyTranslations(lang) {
 
     // Header
     document.querySelector('.app-title').textContent = t.appTitle;
-    navButtons.settings.textContent = t.nav.settings;
-    navButtons.record.textContent = t.nav.record;
-    navButtons.results.textContent = t.nav.results;
-    navButtons.library.textContent = t.nav.library;
 
     // Settings View
     document.querySelector('#view-settings h2').textContent = t.settings.title;
