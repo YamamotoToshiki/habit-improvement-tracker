@@ -338,7 +338,7 @@ button {
 }
 
 /* Required/Optional Badges */
-.required,
+.required::after,
 .badge-optional {
     display: inline-flex;
     align-items: center;
