@@ -589,6 +589,12 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
     if (!durationVal) {
         showValidationError(document.getElementById('setting-duration'), "必須項目です");
         hasError = true;
+    } else {
+        const durationNum = parseInt(durationVal, 10);
+        if (isNaN(durationNum) || durationNum < 1 || durationNum > 90) {
+            showValidationError(document.getElementById('setting-duration'), "1から90までの数値を入力してください");
+            hasError = true;
+        }
     }
 
     if (!notificationVal) {
