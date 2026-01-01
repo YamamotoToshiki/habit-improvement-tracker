@@ -303,12 +303,6 @@ button {
     /* For tooltips */
 }
 
-/* Base label styles */
-label {
-    display: block;
-    margin-bottom: var(--space-sm);
-}
-
 .form-group label {
     font-weight: 500;
     color: var(--text-secondary);
@@ -356,13 +350,15 @@ label {
     vertical-align: middle;
 }
 
-.badge-required {
+.badge-required::after {
+    content: "ïKê{";
     background: rgba(239, 68, 68, 0.1);
     color: var(--color-danger);
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.badge-optional {
+.badge-optional::after {
+    content: "îCà”";
     background: rgba(16, 185, 129, 0.1);
     color: var(--color-success);
     border: 1px solid rgba(16, 185, 129, 0.3);
