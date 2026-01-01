@@ -1857,7 +1857,7 @@ function applyTranslations(lang) {
     navButtons.library.innerHTML = `<i class="fa-solid fa-book"></i>${t.nav.library}`;
 
     // Settings View
-    document.querySelector('#view-settings h2').textContent = t.settings.title;
+    document.querySelector('#view-settings h2').innerHTML = `<i class="fa-solid fa-flask"></i>${t.settings.title}`;
     document.querySelector('label[for="setting-strategy"]').textContent = t.settings.labels.strategy;
     document.querySelector('label[for="setting-strategy-custom"]').textContent = t.settings.labels.strategyCustom;
     document.querySelector('label[for="setting-action"]').textContent = t.settings.labels.action;
@@ -1871,7 +1871,7 @@ function applyTranslations(lang) {
     document.getElementById('btn-end-experiment').innerHTML = `<i class="fa-solid fa-flag-checkered"></i>${t.settings.buttons.end}`;
 
     // Record View
-    document.querySelector('#view-record h2').textContent = t.record.title;
+    document.querySelector('#view-record h2').innerHTML = `<i class="fa-solid fa-calendar-check"></i>${t.record.title}`;
     // ... (Add more mappings as needed, covering the main labels)
     // Toggle switch labels use .toggle-label span instead of label[for=...]
     document.querySelector('#record-carried-out').closest('.toggle-group').querySelector('.toggle-label').textContent = t.record.labels.carriedOut;
@@ -1888,12 +1888,12 @@ function applyTranslations(lang) {
     document.getElementById('btn-edit-record').innerHTML = `<i class="fa-solid fa-pen"></i>${t.record.buttons.edit}`;
 
     // Results View
-    document.querySelector('#view-results h2').textContent = t.results.title;
+    document.querySelector('#view-results h2').innerHTML = `<i class="fa-solid fa-chart-line"></i>${t.results.title}`;
     document.querySelector('label[for="result-experiment-select"]').textContent = t.results.labels.experimentSelect;
     document.getElementById('btn-export-data').innerHTML = `<i class="fa-solid fa-download"></i>${t.results.buttons.export}`;
 
     // Library View
-    document.querySelector('#view-library h2').textContent = t.library.title;
+    document.querySelector('#view-library h2').innerHTML = `<i class="fa-solid fa-book-open"></i>${t.library.title}`;
     // Note: Library items are details/summary, might need more specific selection if we want to translate them dynamically
     // For now, assuming static HTML matches 'ja' default.
 }
