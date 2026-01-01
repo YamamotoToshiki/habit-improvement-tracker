@@ -339,7 +339,7 @@ button {
 
 /* Required/Optional Badges */
 .required::after,
-.badge-optional {
+.optional::after {
     display: inline-flex;
     align-items: center;
     padding: 2px 8px;
@@ -359,7 +359,8 @@ button {
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.badge-optional {
+.optional::after {
+    content: "任意";
     background: rgba(16, 185, 129, 0.1);
     color: var(--color-success);
     border: 1px solid rgba(16, 185, 129, 0.3);
