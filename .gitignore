@@ -7,6 +7,9 @@ task-instructions.md
 # console directory
 consoleLogs/
 
+# reference files
+referenceFiles/
+
 # Logs
 logs
 *.log
@@ -75,4 +78,3 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
-ui-mockup.html

@@ -1867,10 +1867,11 @@ function applyTranslations(lang) {
     // Record View
     document.querySelector('#view-record h2').textContent = t.record.title;
     // ... (Add more mappings as needed, covering the main labels)
-    document.querySelector('label[for="record-carried-out"]').textContent = t.record.labels.carriedOut;
+    // Toggle switch labels use .toggle-label span instead of label[for=...]
+    document.querySelector('#record-carried-out').closest('.toggle-group').querySelector('.toggle-label').textContent = t.record.labels.carriedOut;
     document.querySelector('label[for="record-started-time"]').textContent = t.record.labels.startedTime;
     document.querySelector('label[for="record-duration"]').textContent = t.record.labels.durationTime;
-    document.querySelector('label[for="record-interrupted"]').textContent = t.record.labels.interrupted;
+    document.querySelector('#record-interrupted').closest('.toggle-group').querySelector('.toggle-label').textContent = t.record.labels.interrupted;
     document.querySelector('label[for="record-interruption-reason"]').textContent = t.record.labels.interruptionReason;
     document.querySelector('label[for="record-concentration"]').textContent = t.record.labels.concentration;
     document.querySelector('label[for="record-accomplishment"]').textContent = t.record.labels.accomplishment;
