@@ -338,7 +338,7 @@ button {
 }
 
 /* Required/Optional Badges */
-.badge-required,
+.required,
 .badge-optional {
     display: inline-flex;
     align-items: center;
@@ -352,7 +352,8 @@ button {
     white-space: nowrap;
 }
 
-.badge-required {
+.required::after {
+    content: "ïKê{";
     background: rgba(239, 68, 68, 0.1);
     color: var(--color-danger);
     border: 1px solid rgba(239, 68, 68, 0.3);
