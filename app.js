@@ -1,3 +1,80 @@
+(function(){
+  const debugFilter = el => {
+    if(!el) return false;
+    if (el.id === 'nav-settings') return true;
+    try {
+      if (el.matches && el.matches('#nav-settings, .fa-solid')) return true;
+      if (el.querySelector && el.querySelector('.fa-solid')) return true;
+    } catch(e){}
+    return false;
+  };
+
+  const origRemove = Element.prototype.remove;
+  Element.prototype.remove = function() {
+    if (debugFilter(this) || debugFilter(this.parentElement)) {
+      console.log('DEBUG: Element.remove called on', this);
+      console.trace();
+    }
+    return origRemove.apply(this, arguments);
+  };
+
+  const origRemoveChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function(child) {
+    if (debugFilter(child) || debugFilter(this)) {
+      console.log('DEBUG: removeChild parent=', this, 'child=', child);
+      console.trace();
+    }
+    return origRemoveChild.apply(this, arguments);
+  };
+
+  const origReplaceChild = Node.prototype.replaceChild;
+  Node.prototype.replaceChild = function(newChild, oldChild) {
+    if (debugFilter(oldChild) || debugFilter(newChild) || debugFilter(this)) {
+      console.log('DEBUG: replaceChild parent=', this, 'old=', oldChild, 'new=', newChild);
+      console.trace();
+    }
+    return origReplaceChild.apply(this, arguments);
+  };
+
+  const desc = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML') || Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML');
+  if (desc && desc.set) {
+    Object.defineProperty(Element.prototype, 'innerHTML', {
+      get: desc.get,
+      set: function(v) {
+        if (debugFilter(this) || (typeof v === 'string' && v.indexOf('<i class="fa-solid') !== -1)) {
+          console.log('DEBUG: set innerHTML on', this, 'value preview:', (''+v).slice(0,200));
+          console.trace();
+        }
+        return desc.set.call(this, v);
+      }
+    });
+  }
+
+  const root = document.querySelector('.main-nav') || document.getElementById('nav-settings') || document.body;
+  const mo = new MutationObserver(records => {
+    records.forEach(r => {
+      if (r.removedNodes && r.removedNodes.length) {
+        r.removedNodes.forEach(n => {
+          if (debugFilter(n) || (n.querySelector && n.querySelector('.fa-solid'))) {
+            console.log('DEBUG: MutationObserver removed node', n, r);
+            console.trace();
+          }
+        });
+      }
+      if (r.type === 'childList' && r.addedNodes.length) {
+        r.addedNodes.forEach(n => {
+          if (debugFilter(n) || (n.querySelector && n.querySelector('.fa-solid'))) {
+            console.log('DEBUG: MutationObserver added node', n, r);
+            console.trace();
+          }
+        });
+      }
+    });
+  });
+  mo.observe(root, { childList: true, subtree: true });
+  window.__DEBUG_NAV_OBSERVER = mo;
+})();
+
 import { auth, db, googleProvider, messaging, getToken, onMessage, VAPID_KEY, signInWithRedirect, getRedirectResult, deleteField } from './firebase-config.js';
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, setDoc, doc, Timestamp, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
