@@ -52,25 +52,12 @@
         <div class="header-container">
             <h1 class="app-title">習慣改善トラッカー</h1>
             <nav class="main-nav">
-                <button id="nav-settings" class="nav-btn" data-target="view-settings">
-                    <i class="fa-solid fa-flask"></i>
-                    <span class="nav-label">実験設定</span>
-                </button>
-                <button id="nav-record" class="nav-btn" data-target="view-record">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span class="nav-label">日次記録</span>
-                </button>
-                <button id="nav-results" class="nav-btn" data-target="view-results">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span class="nav-label">結果表示</span>
-                </button>
-                <button id="nav-library" class="nav-btn" data-target="view-library">
-                    <i class="fa-solid fa-book"></i>
-                    <span class="nav-label">介入策一覧</span>
-                </button>
-                <button id="btn-logout" class="nav-btn nav-btn-logout" title="ログアウト">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </button>
+                <button id="nav-settings" class="nav-btn" data-target="view-settings">実験設定</button>
+                <button id="nav-record" class="nav-btn" data-target="view-record">日次記録</button>
+                <button id="nav-results" class="nav-btn" data-target="view-results">結果表示</button>
+                <button id="nav-library" class="nav-btn" data-target="view-library">介入策一覧</button>
+                <button id="btn-logout" class="nav-btn nav-btn-logout" title="ログアウト"><i
+                        class="fa-solid fa-arrow-right-from-bracket"></i></button>
             </nav>
         </div>
     </header>
@@ -101,7 +88,7 @@
         <!-- 4.1.2 実験設定画面 -->
         <section id="view-settings" class="view-section hidden">
             <div class="container">
-                <h2><i class="fa-solid fa-flask"></i> 実験設定</h2>
+                <h2>実験設定</h2>
                 <form id="form-settings">
                     <div class="form-group">
                         <label for="setting-strategy" class="required">介入策選択</label>
@@ -142,30 +129,27 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" id="btn-save-experiment" class="btn-primary"><i
-                                class="fa-solid fa-floppy-disk"></i> 保存</button>
-                        <button type="button" id="btn-end-experiment" class="btn-danger" disabled><i
-                                class="fa-solid fa-stop"></i> 実験終了</button>
+                        <button type="button" id="btn-save-experiment" class="btn-primary">保存</button>
+                        <button type="button" id="btn-end-experiment" class="btn-danger" disabled>実験終了</button>
                     </div>
-            </div>
-            </form>
+                </form>
 
-            <!-- Notification Enable Section -->
-            <div id="notification-section" class="info-card" style="margin-top: 24px; display: none;">
-                <p><i class="fa-solid fa-bell"></i> <strong>プッシュ通知</strong></p>
-                <p id="notification-status" style="font-size: 0.9em; margin: 8px 0;">
-                    通知が未設定です。通知を有効にすると、設定した時刻にリマインダーが届きます。</p>
-                <button type="button" id="btn-enable-notification" class="btn-secondary" style="margin-top: 8px;">
-                    <i class="fa-solid fa-bell"></i> 通知を有効にする
-                </button>
-            </div>
+                <!-- Notification Enable Section -->
+                <div id="notification-section" class="info-card" style="margin-top: 24px; display: none;">
+                    <p><i class="fa-solid fa-bell"></i> <strong>プッシュ通知</strong></p>
+                    <p id="notification-status" style="font-size: 0.9em; margin: 8px 0;">
+                        通知が未設定です。通知を有効にすると、設定した時刻にリマインダーが届きます。</p>
+                    <button type="button" id="btn-enable-notification" class="btn-secondary" style="margin-top: 8px;">
+                        <i class="fa-solid fa-bell"></i> 通知を有効にする
+                    </button>
+                </div>
             </div>
         </section>
 
         <!-- 4.1.3 日次記録画面 -->
         <section id="view-record" class="view-section hidden">
             <div class="container">
-                <h2><i class="fa-solid fa-calendar-check"></i> 日次記録</h2>
+                <h2>日次記録</h2>
                 <div class="info-card">
                     <p><strong>実験名:</strong> <span id="record-experiment-name">---</span></p>
                     <p><strong>経過日数:</strong> <span id="record-days-elapsed">---</span>日目</p>
@@ -176,7 +160,7 @@
                     <!-- 基本情報 セクション -->
                     <div class="form-section">
                         <div class="form-section-title">
-                            <i class="fa-solid fa-clipboard-check"></i>
+                            <i class="fa-solid fa-square-check"></i>
                             基本情報
                         </div>
                         <div class="form-group toggle-group">
@@ -193,7 +177,7 @@
                         <!-- 詳細情報 セクション -->
                         <div class="form-section">
                             <div class="form-section-title">
-                                <i class="fa-solid fa-circle-info"></i>
+                                <i class="fa-solid fa-list-check"></i>
                                 詳細情報
                             </div>
                             <div class="form-group">
@@ -240,7 +224,7 @@
                         <!-- 自己評価 セクション -->
                         <div class="form-section">
                             <div class="form-section-title">
-                                <i class="fa-solid fa-chart-simple"></i>
+                                <i class="fa-solid fa-chart-bar"></i>
                                 自己評価 (1-5)
                             </div>
                             <div class="form-group slider-group">
@@ -269,7 +253,7 @@
                     <!-- メモ セクション -->
                     <div class="form-section">
                         <div class="form-section-title">
-                            <i class="fa-solid fa-pen-to-square"></i>
+                            <i class="fa-solid fa-comment-dots"></i>
                             メモ
                         </div>
                         <div class="form-group">
@@ -281,10 +265,8 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" id="btn-save-record" class="btn-primary"><i
-                                class="fa-solid fa-floppy-disk"></i> 保存</button>
-                        <button type="button" id="btn-edit-record" class="btn-secondary" disabled><i
-                                class="fa-solid fa-pen"></i> 修正</button>
+                        <button type="button" id="btn-save-record" class="btn-primary">保存</button>
+                        <button type="button" id="btn-edit-record" class="btn-secondary" disabled>修正</button>
                     </div>
                 </form>
             </div>
@@ -294,7 +276,7 @@
         <section id="view-results" class="view-section hidden">
             <div class="container">
                 <div class="results-header">
-                    <h2><i class="fa-solid fa-chart-line"></i> 結果表示</h2>
+                    <h2>結果表示</h2>
                 </div>
 
                 <div class="form-group">
@@ -373,8 +355,7 @@
                 </div>
 
                 <div class="export-section">
-                    <button id="btn-export-data" class="btn-secondary"><i class="fa-solid fa-download"></i>
-                        データエクスポート</button>
+                    <button id="btn-export-data" class="btn-secondary">データエクスポート</button>
                 </div>
             </div>
         </section>
@@ -382,7 +363,7 @@
         <!-- 4.1.5 介入策一覧画面 -->
         <section id="view-library" class="view-section hidden">
             <div class="container">
-                <h2><i class="fa-solid fa-book"></i> 介入策一覧</h2>
+                <h2>介入策一覧</h2>
                 <div class="library-list">
                     <details class="library-item">
                         <summary>環境の整備</summary>
