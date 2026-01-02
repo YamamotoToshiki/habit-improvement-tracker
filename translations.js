@@ -34,7 +34,7 @@ const translations = {
             },
             tooltips: {
                 strategyCustom: "最大50文字",
-                duration: "推奨期間：14日～28日",
+                duration: "1から90までの数値を入力してください（推奨期間：14日～28日）",
                 endExperiment: "現在の実験を早期終了します"
             },
             options: {
