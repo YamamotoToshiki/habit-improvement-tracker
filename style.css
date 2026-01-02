@@ -347,11 +347,18 @@ button {
     }
 
     .nav-btn {
+        flex: 1;
+        justify-content: center;
         padding: var(--space-sm);
         font-size: 12px;
-        /* Smaller font for mobile */
-        flex: 1;
-        text-align: center;
+    }
+
+    .nav-btn span {
+        display: none;
+    }
+
+    .nav-btn i {
+        font-size: 20px;
     }
 }
 
