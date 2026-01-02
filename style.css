@@ -311,7 +311,6 @@ button {
     box-shadow: var(--shadow-md);
     margin-bottom: var(--space-lg);
     border: 1px solid rgba(0, 163, 191, 0.15);
-    border-left: 8px ridge var(--color-primary);
     transition: all var(--transition-base);
 }
 
@@ -927,30 +926,35 @@ input[type="range"] {
 /* Accordion for Charts & Library */
 .accordion-item {
     margin-bottom: var(--space-md);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    background-color: var(--bg-card);
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 163, 191, 0.15);
+    border-radius: var(--border-radius-lg);
     overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+.accordion-item:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .accordion-header {
     width: 100%;
     text-align: left;
     padding: var(--space-md);
-    background-color: var(--bg-card);
+    background: transparent;
     color: var(--text-primary);
     font-weight: 600;
-    /* display: flex; REMOVED to allow list-style behavior for summary */
     cursor: pointer;
     list-style: none;
-    /* Hide default triangle */
     position: relative;
     padding-right: 40px;
-    /* Space for Custom Marker */
+    transition: all var(--transition-base);
 }
 
 .accordion-header:hover {
-    background-color: var(--bg-secondary);
+    background: rgba(0, 163, 191, 0.05);
 }
 
 .accordion-header::-webkit-details-marker {
@@ -958,24 +962,30 @@ input[type="range"] {
 }
 
 .accordion-header::after {
-    content: '+';
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 14px;
     position: absolute;
     right: var(--space-md);
     top: 50%;
     transform: translateY(-50%);
-    font-weight: bold;
-    color: var(--text-secondary);
-    /* Use secondary or match header color? standard is usually muted */
+    color: var(--color-primary);
+    transition: transform var(--transition-base);
 }
 
 .accordion-item[open] .accordion-header::after {
-    content: '-';
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.accordion-item[open] .accordion-header {
+    border-bottom: 1px solid rgba(0, 163, 191, 0.1);
 }
 
 .accordion-content {
     padding: var(--space-md);
-    border-top: 1px solid var(--border-color);
     background-color: var(--bg-main);
+    animation: slideDown 0.3s ease-out;
 }
 
 /* Library View */
