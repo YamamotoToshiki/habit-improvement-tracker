@@ -211,11 +211,14 @@ button {
 }
 
 /* =========================================
-   4. Header & Navigation
+   4. Header & Navigation - Enhanced with glassmorphism
    ========================================= */
 #app-header {
-    background-color: var(--bg-card);
-    box-shadow: var(--shadow-sm);
+    background: var(--gradient-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+    border-bottom: 1px solid rgba(0, 163, 191, 0.1);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -235,6 +238,7 @@ button {
     font-size: 20px;
     color: var(--color-tertiary);
     margin-bottom: 0;
+    font-weight: 700;
 }
 
 .main-nav {
@@ -253,6 +257,8 @@ button {
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
+    position: relative;
+    overflow: hidden;
 }
 
 /* Ensure icons in nav buttons display correctly */
@@ -261,15 +267,26 @@ button {
     display: inline-block;
     width: 1em;
     text-align: center;
+    transition: transform var(--transition-base);
+}
+
+.nav-btn:hover i {
+    transform: scale(1.1);
 }
 
 .nav-btn:hover {
-    background-color: var(--bg-secondary);
+    background: rgba(0, 163, 191, 0.1);
     color: var(--color-secondary);
 }
 
+/* Active state with gradient indicator */
 .nav-btn.active {
-    background-color: var(--color-primary);
+    background: var(--gradient-primary);
+    color: var(--text-btn);
+    box-shadow: var(--shadow-glow);
+}
+
+.nav-btn.active i {
     color: var(--text-btn);
 }
 
