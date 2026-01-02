@@ -331,26 +331,31 @@ button {
     color: var(--text-btn);
 }
 
-/* Mobile Navigation - Icons Only */
+/* Mobile Navigation - Two-row layout with Icons Only */
 @media (max-width: 767px) {
     .header-container {
-        flex-direction: row;
-        gap: var(--space-md);
+        flex-direction: column;
+        gap: var(--space-sm);
         padding: var(--space-sm) var(--space-md);
     }
 
     .app-title {
-        font-size: 16px;
+        font-size: 20px;
+        text-align: center;
+        width: 100%;
     }
 
     .main-nav {
-        gap: var(--space-xs);
+        width: 100%;
+        justify-content: space-around;
+        gap: 0;
     }
 
     .nav-btn {
         padding: var(--space-sm);
         min-width: 44px;
         height: 44px;
+        flex: 1;
         justify-content: center;
     }
 
