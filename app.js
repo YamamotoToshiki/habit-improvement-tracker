@@ -1144,18 +1144,7 @@ if (viewRecordBtn) {
 
         // Validate: check if date is selected
         if (!recordDateInput || !recordDateInput.value.trim()) {
-            // Show error tooltip
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip-error';
-            tooltip.textContent = '日付が入力されていません';
-            tooltip.style.position = 'absolute';
-            tooltip.style.top = '-40px';
-            tooltip.style.left = '0';
-            recordDateInput.parentElement.style.position = 'relative';
-            recordDateInput.parentElement.appendChild(tooltip);
-
-            // Auto-hide after 3 seconds
-            setTimeout(() => tooltip.remove(), 3000);
+            showValidationError(recordDateInput, "日付を入力してください");
             return;
         }
 
