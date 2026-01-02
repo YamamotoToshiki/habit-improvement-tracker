@@ -301,14 +301,23 @@ button {
    5. Components (Forms, Buttons, Cards)
    ========================================= */
 
-/* Cards (Implicit in sections, but can be explicit) */
+/* Cards - Enhanced with glassmorphism */
 .info-card {
-    background-color: var(--bg-card);
-    padding: var(--space-md);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-sm);
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: var(--space-lg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
     margin-bottom: var(--space-lg);
+    border: 1px solid rgba(0, 163, 191, 0.15);
     border-left: 4px solid var(--color-primary);
+    transition: all var(--transition-base);
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
 /* Forms */
@@ -977,19 +986,35 @@ input[type="range"] {
 }
 
 .library-item {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin-bottom: var(--space-md);
+    border: 1px solid rgba(0, 163, 191, 0.15);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+.library-item:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .library-item summary {
-    padding: var(--space-md);
+    padding: var(--space-lg);
     cursor: pointer;
     font-weight: 600;
     color: var(--color-tertiary);
     list-style: none;
-    /* Hide default triangle */
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all var(--transition-base);
+}
+
+.library-item summary:hover {
+    background: rgba(0, 163, 191, 0.05);
 }
 
 .library-item summary::-webkit-details-marker {
@@ -997,21 +1022,40 @@ input[type="range"] {
 }
 
 .library-item summary::after {
-    content: '+';
-    position: absolute;
-    right: var(--space-md);
-    font-weight: bold;
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--color-primary);
+    transition: transform var(--transition-base);
 }
 
 .library-item[open] summary::after {
-    content: '-';
+    transform: rotate(180deg);
+}
+
+.library-item[open] summary {
+    border-bottom: 1px solid rgba(0, 163, 191, 0.1);
 }
 
 .library-content {
-    padding: var(--space-md);
-    padding-top: 0;
+    padding: var(--space-lg);
+    padding-top: var(--space-md);
     color: var(--text-secondary);
     line-height: 1.8;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* =========================================
