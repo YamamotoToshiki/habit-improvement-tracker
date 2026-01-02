@@ -95,49 +95,51 @@
             <div class="container">
                 <h2><i class="fa-solid fa-flask"></i>実験設定</h2>
                 <form id="form-settings">
-                    <div class="form-group">
-                        <label for="setting-strategy" class="required">介入策選択</label>
-                        <select id="setting-strategy" name="strategy">
-                            <option value="環境の整備">環境の整備</option>
-                            <option value="開始コストの低下">開始コストの低下</option>
-                            <option value="予めの意思決定">予めの意思決定</option>
-                            <option value="即時報酬の導入">即時報酬の導入</option>
-                            <option value="自己イメージの形成">自己イメージの形成</option>
-                            <option value="（その他）">（その他）</option>
-                        </select>
-                    </div>
-
-                    <div id="view-settings-custom" class="disabled-section">
+                    <div class="form-section">
                         <div class="form-group">
-                            <label for="setting-strategy-custom" class="required">介入策入力（その他選択時）</label>
-                            <input type="text" id="setting-strategy-custom" name="strategyCustom" maxlength="50"
-                                disabled placeholder="最大50文字">
+                            <label for="setting-strategy" class="required">介入策選択</label>
+                            <select id="setting-strategy" name="strategy">
+                                <option value="環境の整備">環境の整備</option>
+                                <option value="開始コストの低下">開始コストの低下</option>
+                                <option value="予めの意思決定">予めの意思決定</option>
+                                <option value="即時報酬の導入">即時報酬の導入</option>
+                                <option value="自己イメージの形成">自己イメージの形成</option>
+                                <option value="（その他）">（その他）</option>
+                            </select>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="setting-action" class="required">介入策の詳細</label>
-                        <textarea id="setting-action" name="action" maxlength="2000" rows="4"
-                            placeholder="最大2,000文字"></textarea>
-                        <div class="char-count"><span id="action-char-count">0</span> / 2,000</div>
-                    </div>
+                        <div id="view-settings-custom" class="disabled-section">
+                            <div class="form-group">
+                                <label for="setting-strategy-custom" class="required">介入策入力（その他選択時）</label>
+                                <input type="text" id="setting-strategy-custom" name="strategyCustom" maxlength="50"
+                                    disabled placeholder="最大50文字">
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="setting-duration" class="required">実験期間（日）</label>
-                        <input type="number" id="setting-duration" name="duration" min="1" max="90" value="14">
-                        <span class="tooltip">1から90までの数値を入力してください。（推奨期間：14日～28日）</span>
-                    </div>
+                        <div class="form-group">
+                            <label for="setting-action" class="required">介入策の詳細</label>
+                            <textarea id="setting-action" name="action" maxlength="2000" rows="4"
+                                placeholder="最大2,000文字"></textarea>
+                            <div class="char-count"><span id="action-char-count">0</span> / 2,000</div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="setting-notification" class="required">通知時刻</label>
-                        <input type="time" id="setting-notification" name="notificationTime" value="20:00">
-                    </div>
+                        <div class="form-group">
+                            <label for="setting-duration" class="required">実験期間（日）</label>
+                            <input type="number" id="setting-duration" name="duration" min="1" max="90" value="14">
+                            <span class="tooltip">1から90までの数値を入力してください。（推奨期間：14日～28日）</span>
+                        </div>
 
-                    <div class="form-actions">
-                        <button type="button" id="btn-save-experiment" class="btn-primary"><i
-                                class="fa-solid fa-floppy-disk"></i>保存</button>
-                        <button type="button" id="btn-end-experiment" class="btn-danger" disabled><i
-                                class="fa-solid fa-flag-checkered"></i>実験終了</button>
+                        <div class="form-group">
+                            <label for="setting-notification" class="required">通知時刻</label>
+                            <input type="time" id="setting-notification" name="notificationTime" value="20:00">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="btn-save-experiment" class="btn-primary"><i
+                                    class="fa-solid fa-floppy-disk"></i>保存</button>
+                            <button type="button" id="btn-end-experiment" class="btn-danger" disabled><i
+                                    class="fa-solid fa-flag-checkered"></i>実験終了</button>
+                        </div>
                     </div>
                 </form>
 
