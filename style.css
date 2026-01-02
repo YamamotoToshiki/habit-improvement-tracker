@@ -287,6 +287,15 @@ button {
 }
 
 .nav-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: var(--color-secondary);
+    border-radius: 2px;
     animation: indicator-pulse 2s ease-in-out infinite;
 }
 
