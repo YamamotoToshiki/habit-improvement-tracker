@@ -176,7 +176,6 @@ async function initApp() {
             if (!confirm(t.nav.messages.logoutConfirm)) return;
             try {
                 await signOut(auth);
-                showModal(t.nav.messages.logoutSuccess);
             } catch (error) {
                 debugLog(`Sign-out error: ${error.message}`, 'error');
             }
