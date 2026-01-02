@@ -286,6 +286,10 @@ button {
     box-shadow: var(--shadow-glow);
 }
 
+.nav-btn.active::after {
+    animation: indicator-pulse 2s ease-in-out infinite;
+}
+
 .nav-btn.active i {
     color: var(--text-btn);
 }
