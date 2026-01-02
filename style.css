@@ -290,35 +290,6 @@ button {
     color: var(--text-btn);
 }
 
-/* Animated indicator bar under active nav button */
-.nav-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 3px;
-    background: var(--color-secondary);
-    border-radius: 2px;
-    animation: indicator-pulse 2s ease-in-out infinite;
-    z-index: 1;
-}
-
-@keyframes indicator-pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-        width: 20px;
-    }
-
-    50% {
-        opacity: 0.6;
-        width: 30px;
-    }
-}
-
 /* Mobile Navigation */
 @media (max-width: 767px) {
     .header-container {
@@ -717,23 +688,113 @@ input[type="checkbox"]:not(.toggle-switch input) {
     accent-color: var(--color-primary);
 }
 
-/* Sliders */
+/* Custom Sliders - Modern styling */
 .slider-group {
     display: flex;
     flex-direction: column;
 }
 
 input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
-    margin: var(--space-sm) 0;
+    height: 8px;
+    margin: var(--space-md) 0;
     cursor: pointer;
-    accent-color: var(--color-primary);
+    background: linear-gradient(to right, var(--color-primary) 0%, var(--border-color) 0%);
+    border-radius: 4px;
+    outline: none;
+    transition: all var(--transition-base);
+}
+
+input[type="range"]:hover {
+    box-shadow: 0 0 0 4px rgba(0, 163, 191, 0.1);
+}
+
+/* Webkit (Chrome, Safari) Track */
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: transparent;
+}
+
+/* Webkit Thumb */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    border: 3px solid white;
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(0, 163, 191, 0.2);
+    cursor: pointer;
+    margin-top: -8px;
+    transition: all var(--transition-base);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(0.95);
+}
+
+/* Firefox Track */
+input[type="range"]::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border-color);
+}
+
+/* Firefox Progress (filled portion) */
+input[type="range"]::-moz-range-progress {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--gradient-primary);
+}
+
+/* Firefox Thumb */
+input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    border: 3px solid white;
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(0, 163, 191, 0.2);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+input[type="range"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+input[type="range"]:disabled::-webkit-slider-thumb {
+    cursor: not-allowed;
 }
 
 .slider-value {
-    text-align: center;
-    font-weight: bold;
-    color: var(--color-primary);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+    box-shadow: var(--shadow-md);
 }
 
 /* =========================================
