@@ -302,6 +302,11 @@ button {
     overflow: hidden;
 }
 
+.nav-btn:hover {
+    background: rgba(0, 163, 191, 0.1);
+    color: var(--color-secondary);
+}
+
 /* Ensure icons in nav buttons display correctly */
 .nav-btn i {
     font-size: 16px;
@@ -313,11 +318,6 @@ button {
 
 .nav-btn:hover i {
     transform: scale(1.1);
-}
-
-.nav-btn:hover {
-    background: rgba(0, 163, 191, 0.1);
-    color: var(--color-secondary);
 }
 
 /* Active state with gradient indicator */
@@ -1047,14 +1047,34 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 /* Logout Button in Header */
 .nav-btn-logout {
     background-color: transparent;
-    color: var(--text-tertiary);
-    padding: var(--space-sm);
-    min-width: auto;
+    color: var(--text-secondary);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    transition: all var(--transition-base);
+    font-size: var(--font-size-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    position: relative;
+    overflow: hidden;
 }
 
 .nav-btn-logout:hover {
-    color: var(--color-danger);
     background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+
+.nav-btn-logout i {
+    font-size: 16px;
+    display: inline-block;
+    width: 1em;
+    text-align: center;
+    transition: transform var(--transition-base);
+}
+
+.nav-btn-logout:hover i {
+    transform: scale(1.1);
 }
 
 /* Record View */
