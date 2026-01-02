@@ -178,7 +178,8 @@ async function initApp() {
                 await signOut(auth);
                 showModal(t.nav.messages.logoutSuccess);
             } catch (error) {
-                debugLog(`Sign-out error: ${error.message}`, 'error');
+                debugLog(`Sign-out error: ${error.message}`, 'error');   
+                showModal(t.common.error);
             }
         });
     }
