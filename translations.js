@@ -7,10 +7,6 @@ const translations = {
             results: "結果表示",
             library: "介入策一覧",
             logout: "ログアウト",
-            messages: {
-                logoutConfirm: "ログアウトしますか？",
-                logoutSuccess: "ログアウトしました。"
-            },
         },
         loading: "読み込み中...",
         login: {
@@ -193,4 +189,12 @@ const translations = {
                 day: "日",
                 minute: "分",
                 times: "回"
-        
+            },
+            error: "エラーが発生しました。",
+            close: "閉じる"
+        }
+    },
+    en: {
+        // Future implementation
+    }
+};
