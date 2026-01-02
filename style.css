@@ -350,12 +350,28 @@ button {
     .nav-btn {
         padding: var(--space-sm);
         font-size: 0;
+        display: inline-flex;
+        align-items: center;
         min-width: 44px;
         height: 44px;
         justify-content: center;
     }
 
     .nav-btn i {
+        font-size: 20px;
+    }
+
+    .nav-btn-logout {
+        padding: var(--space-sm);
+        font-size: 0;
+        display: inline-flex;
+        align-items: center;
+        min-width: 44px;
+        height: 44px;
+        justify-content: center;
+    }
+
+    .nav-btn-logout i {
         font-size: 20px;
     }
 }
