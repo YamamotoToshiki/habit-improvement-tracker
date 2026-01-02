@@ -301,7 +301,7 @@ button {
    5. Components (Forms, Buttons, Cards)
    ========================================= */
 
-/* Cards - Enhanced with stacked card effect */
+/* Cards - Enhanced with modern design */
 .info-card {
     background: var(--gradient-card);
     backdrop-filter: blur(10px);
@@ -309,48 +309,33 @@ button {
     padding: var(--space-lg);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
-    margin-bottom: calc(var(--space-lg) + 8px);
-    border: 1px solid rgba(0, 163, 191, 0.15);
+    margin-bottom: var(--space-lg);
+    border: 1px solid rgba(0, 163, 191, 0.12);
     transition: all var(--transition-base);
     position: relative;
+    overflow: hidden;
 }
 
-/* Stacked card layers behind */
-.info-card::before,
-.info-card::after {
+/* Top gradient accent bar */
+.info-card::before {
     content: '';
     position: absolute;
-    border-radius: var(--border-radius-lg);
-    transition: all var(--transition-base);
-}
-
-.info-card::before {
-    inset: 4px -4px -4px 4px;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-    z-index: -1;
-    opacity: 0.5;
-}
-
-.info-card::after {
-    inset: 8px -8px -8px 8px;
-    background: var(--color-tertiary);
-    z-index: -2;
-    opacity: 0.25;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    opacity: 0.8;
 }
 
 .info-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+    border-color: rgba(0, 163, 191, 0.25);
 }
 
 .info-card:hover::before {
-    inset: 6px -6px -6px 6px;
-    opacity: 0.6;
-}
-
-.info-card:hover::after {
-    inset: 12px -12px -12px 12px;
-    opacity: 0.3;
+    opacity: 1;
 }
 
 /* Forms */
