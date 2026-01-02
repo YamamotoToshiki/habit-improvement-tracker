@@ -1144,17 +1144,7 @@ if (viewRecordBtn) {
 
         // Validate: check if date is selected
         if (!recordDateInput || !recordDateInput.value.trim()) {
-            // Show error tooltip
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip-error';
-            tooltip.textContent = '日付を入力してください';
-            tooltip.style.position = 'absolute';
-            tooltip.style.top = '0';
-            tooltip.style.left = '0';
-            recordDateInput.parentElement.style.position = 'relative';
-            recordDateInput.parentElement.appendChild(tooltip);
-            // Auto-hide after 3 seconds
-            setTimeout(() => tooltip.remove(), 3000);
+            showValidationError(recordDateInput, "日付を入力してください", 3000);
             return;
         }
 
@@ -1791,7 +1781,7 @@ document.getElementById('btn-export-data').addEventListener('click', async () =>
 // =========================================
 // Validation Helpers
 // =========================================
-function showValidationError(inputElement, message) {
+function showValidationError(inputElement, message, timeout) {
     inputElement.classList.add('input-error');
 
     // Create Tooltip
@@ -1808,6 +1798,9 @@ function showValidationError(inputElement, message) {
         if (getComputedStyle(parent).position === 'static') {
             parent.style.position = 'relative';
         }
+    }
+    if (timeout) {
+        setTimeout(() => tooltip.remove(), timeout);
     }
 }
 
