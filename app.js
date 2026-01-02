@@ -1800,9 +1800,8 @@ function showValidationError(inputElement, message, timeout) {
         }
     }
     if (timeout) {
-        setTimeout(() => tooltip.remove(), timeout);
-        setTimeout(() => inputElement.classList.remove('input-error'), timeout);
-    }
+        setTimeout(() => clearValidationErrors(), timeout);
+     }
 }
 
 function clearValidationErrors() {
