@@ -286,6 +286,11 @@ button {
     box-shadow: var(--shadow-glow);
 }
 
+.nav-btn.active i {
+    color: var(--text-btn);
+}
+
+/* Animated indicator bar under active nav button */
 .nav-btn.active::after {
     content: '';
     position: absolute;
@@ -300,6 +305,7 @@ button {
 }
 
 @keyframes indicator-pulse {
+
     0%,
     100% {
         opacity: 1;
@@ -310,10 +316,6 @@ button {
         opacity: 0.6;
         width: 30px;
     }
-}
-
-.nav-btn.active i {
-    color: var(--text-btn);
 }
 
 /* Mobile Navigation */
