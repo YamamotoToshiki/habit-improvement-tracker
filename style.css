@@ -302,6 +302,7 @@ button {
     background: var(--color-secondary);
     border-radius: 2px;
     animation: indicator-pulse 2s ease-in-out infinite;
+    z-index: 1;
 }
 
 @keyframes indicator-pulse {
