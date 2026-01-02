@@ -290,6 +290,19 @@ button {
     animation: indicator-pulse 2s ease-in-out infinite;
 }
 
+@keyframes indicator-pulse {
+    0%,
+    100% {
+        opacity: 1;
+        width: 20px;
+    }
+
+    50% {
+        opacity: 0.6;
+        width: 30px;
+    }
+}
+
 .nav-btn.active i {
     color: var(--text-btn);
 }
