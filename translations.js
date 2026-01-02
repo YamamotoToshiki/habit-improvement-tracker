@@ -6,7 +6,11 @@ const translations = {
             record: "日次記録",
             results: "結果表示",
             library: "介入策一覧",
-            logout: "ログアウト"
+            logout: "ログアウト",
+            messages: {
+                logoutConfirm: "ログアウトしますか？",
+                logoutSuccess: "ログアウトしました。"
+            },
         },
         loading: "読み込み中...",
         login: {
@@ -17,7 +21,7 @@ const translations = {
                 popupClosed: "ログインがキャンセルされました。",
                 networkError: "ネットワークエラーが発生しました。",
                 generic: "ログインに失敗しました。"
-            }
+            },
         },
         settings: {
             title: "実験設定",
@@ -123,6 +127,12 @@ const translations = {
                 rate: "記録率",
                 status: "状態"
             },
+            records: {
+              labels: "日次記録参照",
+              placeholder: "日付を選択してください",
+              btnView: "参照",
+              warning: "日付を入力してください"
+            },
             graphs: {
                 graph1: "グラフ1：集計期間全体の作業実施率",
                 graph2: "グラフ2：日付ごとの作業継続時間の推移",
@@ -183,12 +193,4 @@ const translations = {
                 day: "日",
                 minute: "分",
                 times: "回"
-            },
-            error: "エラーが発生しました。",
-            close: "閉じる"
-        }
-    },
-    en: {
-        // Future implementation
-    }
-};
+        
