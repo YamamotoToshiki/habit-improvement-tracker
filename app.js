@@ -1847,10 +1847,10 @@ function applyTranslations(lang) {
 
     // Header
     document.querySelector('.app-title').textContent = t.appTitle;
-    navButtons.settings.innerHTML = `<i class="fa-solid fa-flask"></i>${t.nav.settings}`;
-    navButtons.record.innerHTML = `<i class="fa-solid fa-calendar-check"></i>${t.nav.record}`;
-    navButtons.results.innerHTML = `<i class="fa-solid fa-chart-line"></i>${t.nav.results}`;
-    navButtons.library.innerHTML = `<i class="fa-solid fa-book"></i>${t.nav.library}`;
+    navButtons.settings.innerHTML = `<i class="fa-solid fa-flask"></i><span class="nav-text">${t.nav.settings}</span>`;
+    navButtons.record.innerHTML = `<i class="fa-solid fa-calendar-check"></i><span class="nav-text">${t.nav.record}</span>`;
+    navButtons.results.innerHTML = `<i class="fa-solid fa-chart-line"></i><span class="nav-text">${t.nav.results}</span>`;
+    navButtons.library.innerHTML = `<i class="fa-solid fa-book"></i><span class="nav-text">${t.nav.library}</span>`;
 
     // Settings View
     document.querySelector('#view-settings h2').innerHTML = `<i class="fa-solid fa-flask"></i>${t.settings.title}`;
