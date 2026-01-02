@@ -311,7 +311,6 @@ button {
     box-shadow: var(--shadow-md);
     margin-bottom: var(--space-lg);
     border: 1px solid rgba(0, 163, 191, 0.15);
-    border-left: 4px solid var(--color-primary);
     transition: all var(--transition-base);
 }
 
