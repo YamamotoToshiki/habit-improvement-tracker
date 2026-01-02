@@ -331,30 +331,28 @@ button {
     color: var(--text-btn);
 }
 
-/* Mobile Navigation */
+/* Mobile Navigation - Icons Only */
 @media (max-width: 767px) {
     .header-container {
-        flex-direction: column;
+        flex-direction: row;
         gap: var(--space-md);
-        padding: var(--space-md);
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .app-title {
+        font-size: 16px;
     }
 
     .main-nav {
-        width: 100%;
-        justify-content: space-between;
-        /* Distribute evenly */
         gap: var(--space-xs);
     }
 
     .nav-btn {
-        flex: 1;
-        justify-content: center;
         padding: var(--space-sm);
-        font-size: 12px;
-    }
-
-    .nav-btn span {
-        display: none;
+        font-size: 0;
+        min-width: 44px;
+        height: 44px;
+        justify-content: center;
     }
 
     .nav-btn i {
