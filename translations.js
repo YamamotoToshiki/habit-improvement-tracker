@@ -35,6 +35,7 @@ const translations = {
             tooltips: {
                 strategyCustom: "最大50文字",
                 duration: "1から90までの数値を入力してください（推奨期間：14日～28日）",
+                notification: "作業を終えて日次記録を作成する時刻を設定してください",
                 endExperiment: "現在の実験を早期終了します"
             },
             options: {
