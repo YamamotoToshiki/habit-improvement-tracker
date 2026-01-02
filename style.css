@@ -311,7 +311,7 @@ button {
     box-shadow: var(--shadow-md);
     margin-bottom: var(--space-lg);
     border: 1px solid rgba(0, 163, 191, 0.15);
-    border-left: 8px ridge var(--color-primary / 0.6);
+    border-left: 8px ridge rgba(0, 163, 191, 0.9);
     transition: all var(--transition-base);
 }
 
