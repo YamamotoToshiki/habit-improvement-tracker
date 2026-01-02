@@ -7,6 +7,10 @@ const translations = {
             results: "結果表示",
             library: "介入策一覧",
             logout: "ログアウト",
+            messages: {
+                logoutConfirm: "ログアウトしますか？",
+                logoutSuccess: "ログアウトしました。"
+            }
         },
         loading: "読み込み中...",
         login: {
@@ -124,10 +128,10 @@ const translations = {
                 status: "状態"
             },
             records: {
-              labels: "日次記録参照",
-              placeholder: "日付を選択してください",
-              btnView: "参照",
-              warning: "日付を入力してください"
+                labels: "日次記録参照",
+                placeholder: "日付を選択してください",
+                btnView: "参照",
+                warning: "日付を入力してください"
             },
             graphs: {
                 graph1: "グラフ1：集計期間全体の作業実施率",

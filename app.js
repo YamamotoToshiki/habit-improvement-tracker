@@ -172,8 +172,10 @@ async function initApp() {
     const logoutBtn = document.getElementById('btn-logout');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
+            if (!confirm(t.nav.messages.logoutConfirm)) return;
             try {
                 await signOut(auth);
+                showModal(t.nav.messages.logoutSuccess);
             } catch (error) {
                 debugLog(`Sign-out error: ${error.message}`, 'error');
             }
@@ -1801,7 +1803,7 @@ function showValidationError(inputElement, message, timeout) {
     }
     if (timeout) {
         setTimeout(() => clearValidationErrors(), timeout);
-     }
+    }
 }
 
 function clearValidationErrors() {
