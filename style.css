@@ -301,7 +301,7 @@ button {
    5. Components (Forms, Buttons, Cards)
    ========================================= */
 
-/* Cards - Enhanced with modern design */
+/* Cards - Enhanced with glassmorphism */
 .info-card {
     background: var(--gradient-card);
     backdrop-filter: blur(10px);
@@ -310,32 +310,14 @@ button {
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     margin-bottom: var(--space-lg);
-    border: 1px solid rgba(0, 163, 191, 0.12);
+    border: 1px solid rgba(0, 163, 191, 0.15);
+    border-left: 8px ridge var(--color-primary / 0.6);
     transition: all var(--transition-base);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Top gradient accent bar */
-.info-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-primary);
-    opacity: 0.8;
 }
 
 .info-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
-    border-color: rgba(0, 163, 191, 0.25);
-}
-
-.info-card:hover::before {
-    opacity: 1;
 }
 
 /* Forms */
