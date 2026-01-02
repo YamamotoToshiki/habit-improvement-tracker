@@ -172,6 +172,7 @@ async function initApp() {
     const logoutBtn = document.getElementById('btn-logout');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
+            const t = translations[state.currentLang];
             if (!confirm(t.nav.messages.logoutConfirm)) return;
             try {
                 await signOut(auth);
