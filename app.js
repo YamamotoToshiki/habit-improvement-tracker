@@ -145,6 +145,10 @@ async function initApp() {
                 debugLog("Using signInWithPopup");
                 const result = await signInWithPopup(auth, googleProvider);
                 debugLog(`signInWithPopup successful: ${result.user.uid}`);
+
+                // Show welcome modal on login
+                const t = translations[state.currentLang];
+                showModal(t.login.welcomeMessage, true);
             } catch (error) {
                 debugLog(`Google sign-in error: ${error.code} - ${error.message}`, 'error');
 
@@ -178,7 +182,7 @@ async function initApp() {
                 await signOut(auth);
                 showModal(t.nav.messages.logoutSuccess);
             } catch (error) {
-                debugLog(`Sign-out error: ${error.message}`, 'error');   
+                debugLog(`Sign-out error: ${error.message}`, 'error');
                 showModal(t.common.error);
             }
         });
@@ -1820,8 +1824,12 @@ const modalOverlay = document.getElementById('modal-overlay');
 const modalMessage = document.getElementById('modal-message');
 const modalCloseBtn = document.getElementById('btn-modal-close');
 
-function showModal(message) {
-    modalMessage.textContent = message;
+function showModal(message, isHtml = false) {
+    if (isHtml) {
+        modalMessage.innerHTML = message;
+    } else {
+        modalMessage.textContent = message;
+    }
     modalMessage.classList.remove('hidden');
     document.getElementById('modal-record-detail').classList.add('hidden');
     modalOverlay.classList.remove('hidden');
