@@ -208,7 +208,8 @@ const translations = {
                 times: "回"
             },
             error: "エラーが発生しました。",
-            close: "閉じる"
+            close: "閉じる",
+            notificationEnabled: "通知は有効です。"
         }
     },
     en: {

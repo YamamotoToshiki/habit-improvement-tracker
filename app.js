@@ -198,6 +198,15 @@ async function initApp() {
     if (fabNotification) {
         fabNotification.addEventListener('click', async () => {
             debugLog("Notification FAB clicked");
+            const t = translations[state.currentLang];
+
+            // If already granted, show modal message
+            if (Notification.permission === 'granted') {
+                showModal(t.common.notificationEnabled);
+                return;
+            }
+
+            // Otherwise request permission
             if (state.currentUser) {
                 await requestNotificationPermission(state.currentUser.uid);
                 updateNotificationFabState();
