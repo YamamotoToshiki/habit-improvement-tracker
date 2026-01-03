@@ -299,7 +299,7 @@ async function requestNotificationPermission(userId) {
                 // Set up foreground message handler
                 setupForegroundMessageHandler();
 
-                // Update notification FAB state to show enabled
+                // Update notification FAB to show enabled state
                 updateNotificationFabState();
             } else {
                 debugLog("No FCM registration token available. This may happen on iOS if not running as installed PWA.", "warn");
