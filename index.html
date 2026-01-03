@@ -147,16 +147,6 @@
                     </div>
 
                 </form>
-
-                <!-- Notification Enable Section -->
-                <div id="notification-section" class="info-card" style="margin-top: 24px; display: none;">
-                    <p><i class="fa-solid fa-bell"></i> <strong>プッシュ通知</strong></p>
-                    <p id="notification-status" style="font-size: 0.9em; margin: 8px 0;">
-                        通知が未設定です。通知を有効にすると、設定した時刻にリマインダーが届きます。</p>
-                    <button type="button" id="btn-enable-notification" class="btn-secondary" style="margin-top: 8px;">
-                        <i class="fa-solid fa-bell"></i> 通知を有効にする
-                    </button>
-                </div>
             </div>
         </section>
 
@@ -434,7 +424,10 @@
         </div>
     </div>
 
-    <!-- Floating Action Button (Help) -->
+    <!-- Floating Action Buttons -->
+    <button id="fab-notification" class="fab fab-secondary hidden" title="通知設定">
+        <i class="fa-solid fa-bell-slash"></i>
+    </button>
     <button id="fab-help" class="fab hidden" title="ヘルプ">
         <i class="fa-solid fa-question"></i>
     </button>

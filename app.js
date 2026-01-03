@@ -110,9 +110,11 @@ async function initApp() {
         if (user) {
             debugLog(`User signed in: ${user.uid}`);
             state.currentUser = user;
-            // Show header nav and FAB when logged in
+            // Show header nav and FABs when logged in
             document.getElementById('app-header').classList.remove('hidden');
             document.getElementById('fab-help').classList.remove('hidden');
+            document.getElementById('fab-notification').classList.remove('hidden');
+            updateNotificationFabState();
             // Hide loading view
             views.loading.classList.add('hidden');
             await checkActiveExperiment(user.uid);
@@ -124,9 +126,10 @@ async function initApp() {
         } else {
             debugLog("No user, showing login view...");
             state.currentUser = null;
-            // Hide header nav and FAB when not logged in
+            // Hide header nav and FABs when not logged in
             document.getElementById('app-header').classList.add('hidden');
             document.getElementById('fab-help').classList.add('hidden');
+            document.getElementById('fab-notification').classList.add('hidden');
             switchView('login');
         }
     });
@@ -190,13 +193,14 @@ async function initApp() {
         });
     }
 
-    // Notification Enable Button (for requesting permission with user interaction)
-    const notificationBtn = document.getElementById('btn-enable-notification');
-    if (notificationBtn) {
-        notificationBtn.addEventListener('click', async () => {
-            debugLog("Notification enable button clicked");
+    // Notification FAB Button
+    const fabNotification = document.getElementById('fab-notification');
+    if (fabNotification) {
+        fabNotification.addEventListener('click', async () => {
+            debugLog("Notification FAB clicked");
             if (state.currentUser) {
                 await requestNotificationPermission(state.currentUser.uid);
+                updateNotificationFabState();
             }
         });
     }
@@ -341,6 +345,33 @@ function setupForegroundMessageHandler() {
     });
 }
 
+// Update notification FAB state based on permission status
+function updateNotificationFabState() {
+    const fabNotification = document.getElementById('fab-notification');
+    if (!fabNotification) return;
+
+    const icon = fabNotification.querySelector('i');
+    if (!icon) return;
+
+    // Check notification permission status
+    const permission = Notification.permission;
+    debugLog(`Notification permission status: ${permission}`);
+
+    if (permission === 'granted') {
+        // Enabled state - primary color with bell icon
+        fabNotification.classList.remove('fab-secondary');
+        icon.classList.remove('fa-bell-slash');
+        icon.classList.add('fa-bell');
+        fabNotification.title = '通知: 有効';
+    } else {
+        // Disabled state - danger color with bell-slash icon
+        fabNotification.classList.add('fab-secondary');
+        icon.classList.remove('fa-bell');
+        icon.classList.add('fa-bell-slash');
+        fabNotification.title = '通知: 無効（タップで許可）';
+    }
+}
+
 // =========================================
 // Navigation & View Switching
 // =========================================
@@ -457,9 +488,6 @@ function updateSettingsViewState(hasActiveExperiment) {
     const inputs = form.querySelectorAll('input, select, textarea');
     const saveBtn = document.getElementById('btn-save-experiment');
     const endBtn = document.getElementById('btn-end-experiment');
-    const notificationSection = document.getElementById('notification-section');
-    const notificationStatus = document.getElementById('notification-status');
-    const notificationBtn = document.getElementById('btn-enable-notification');
 
     if (hasActiveExperiment) {
         // Populate form with current experiment data
@@ -488,12 +516,6 @@ function updateSettingsViewState(hasActiveExperiment) {
             saveBtn.disabled = true;
             endBtn.disabled = false;
         }
-
-        // Show notification section when there's an active experiment
-        if (notificationSection) {
-            notificationSection.style.display = 'block';
-            updateNotificationSectionUI();
-        }
     } else {
         // Unlock inputs
         inputs.forEach(input => input.disabled = false);
@@ -504,11 +526,6 @@ function updateSettingsViewState(hasActiveExperiment) {
         form.reset();
         // Re-trigger strategy change to set initial state of custom field
         document.getElementById('setting-strategy').dispatchEvent(new Event('change'));
-
-        // Hide notification section when no active experiment
-        if (notificationSection) {
-            notificationSection.style.display = 'none';
-        }
     }
 }
 

@@ -739,6 +739,27 @@ button:disabled {
     }
 }
 
+/* FAB Secondary (Danger) Style - for disabled notification */
+.fab.fab-secondary {
+    background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.fab.fab-secondary:hover {
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(239, 68, 68, 0.5);
+}
+
+/* FAB Notification - Position above help FAB */
+#fab-notification {
+    bottom: 96px;
+}
+
+@media (max-width: 767px) {
+    #fab-notification {
+        bottom: 92px;
+    }
+}
+
 /* Toggle Switch - Modern replacement for checkbox */
 .toggle-group {
     display: flex;
