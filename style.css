@@ -110,14 +110,24 @@
     padding: 0;
 }
 
+html {
+    height: 100%;
+    background: var(--gradient-bg);
+    background-attachment: fixed;
+}
+
 body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
     line-height: 1.6;
     background: var(--gradient-bg);
+    background-attachment: fixed;
     color: var(--text-primary);
-    min-height: 100vh;
+    min-height: 100%;
+    min-height: 100dvh;
     -webkit-font-smoothing: antialiased;
+    /* iOS safe area support */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 h1,
