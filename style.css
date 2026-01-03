@@ -690,6 +690,55 @@ button:disabled {
     }
 }
 
+/* Floating Action Button (FAB) */
+.fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: var(--text-btn);
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transition: all var(--transition-base);
+    z-index: 500;
+}
+
+.fab:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(43, 200, 228, 0.5);
+}
+
+.fab:active {
+    transform: translateY(0) scale(0.95);
+}
+
+.fab i {
+    font-size: 24px;
+}
+
+/* FAB Mobile - Larger touch target */
+@media (max-width: 767px) {
+    .fab {
+        bottom: 16px;
+        right: 16px;
+        width: 60px;
+        height: 60px;
+        font-size: 26px;
+    }
+
+    .fab i {
+        font-size: 26px;
+    }
+}
+
 /* Toggle Switch - Modern replacement for checkbox */
 .toggle-group {
     display: flex;

@@ -110,8 +110,9 @@ async function initApp() {
         if (user) {
             debugLog(`User signed in: ${user.uid}`);
             state.currentUser = user;
-            // Show header nav when logged in
+            // Show header nav and FAB when logged in
             document.getElementById('app-header').classList.remove('hidden');
+            document.getElementById('fab-help').classList.remove('hidden');
             // Hide loading view
             views.loading.classList.add('hidden');
             await checkActiveExperiment(user.uid);
@@ -123,8 +124,9 @@ async function initApp() {
         } else {
             debugLog("No user, showing login view...");
             state.currentUser = null;
-            // Hide header nav when not logged in
+            // Hide header nav and FAB when not logged in
             document.getElementById('app-header').classList.add('hidden');
+            document.getElementById('fab-help').classList.add('hidden');
             switchView('login');
         }
     });
@@ -196,6 +198,15 @@ async function initApp() {
             if (state.currentUser) {
                 await requestNotificationPermission(state.currentUser.uid);
             }
+        });
+    }
+
+    // Help FAB Button
+    const fabHelp = document.getElementById('fab-help');
+    if (fabHelp) {
+        fabHelp.addEventListener('click', () => {
+            const t = translations[state.currentLang];
+            showModal(t.login.welcomeMessage, true);
         });
     }
 }
