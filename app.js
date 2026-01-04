@@ -538,33 +538,6 @@ function updateSettingsViewState(hasActiveExperiment) {
     }
 }
 
-// Update notification section UI based on current permission state
-function updateNotificationSectionUI() {
-    const notificationStatus = document.getElementById('notification-status');
-    const notificationBtn = document.getElementById('btn-enable-notification');
-
-    if (!notificationStatus || !notificationBtn) return;
-
-    if (!('Notification' in window)) {
-        notificationStatus.textContent = 'お使いのブラウザは通知に対応していません。';
-        notificationBtn.style.display = 'none';
-        return;
-    }
-
-    const permission = Notification.permission;
-
-    if (permission === 'granted') {
-        notificationStatus.innerHTML = '<i class="fa-solid fa-check" style="color: var(--color-success);"></i> 通知は有効です。設定した時刻にリマインダーが届きます。';
-        notificationBtn.style.display = 'none';
-    } else if (permission === 'denied') {
-        notificationStatus.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--color-danger);"></i> 通知がブロックされています。ブラウザの設定から許可してください。';
-        notificationBtn.style.display = 'none';
-    } else {
-        notificationStatus.textContent = '通知が未設定です。通知を有効にすると、設定した時刻にリマインダーが届きます。';
-        notificationBtn.style.display = 'block';
-    }
-}
-
 // Settings Form Event Listeners
 const strategySelect = document.getElementById('setting-strategy');
 const strategyCustomInput = document.getElementById('setting-strategy-custom');
