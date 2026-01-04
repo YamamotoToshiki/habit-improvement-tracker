@@ -17,61 +17,6 @@ let calendarInstance = null;
 let chartInstances = {}; // Store chart instances by ID
 
 // =========================================
-// Debug Logging (for iOS debugging)
-// =========================================
-const DEBUG_MODE = true; // Set to false in production
-const debugLogs = [];
-
-function debugLog(message, type = 'info') {
-    const timestamp = new Date().toLocaleTimeString();
-    const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
-    debugLogs.push(logEntry);
-
-    // Also log to console
-    if (type === 'error') {
-        console.error(message);
-    } else if (type === 'warn') {
-        console.warn(message);
-    } else {
-        console.log(message);
-    }
-
-    // Update debug panel if visible
-    if (DEBUG_MODE) {
-        const debugContent = document.getElementById('debug-log-content');
-        if (debugContent) {
-            debugContent.innerHTML = debugLogs.slice(-50).map(log => `<div>${log}</div>`).join('');
-            debugContent.scrollTop = debugContent.scrollHeight;
-        }
-    }
-}
-
-// Triple-tap on header to show debug panel
-let tapCount = 0;
-let tapTimeout = null;
-document.addEventListener('DOMContentLoaded', () => {
-    const header = document.getElementById('app-header');
-    if (header && DEBUG_MODE) {
-        header.addEventListener('click', () => {
-            tapCount++;
-            if (tapCount === 3) {
-                const panel = document.getElementById('debug-panel');
-                if (panel) {
-                    panel.classList.toggle('hidden');
-                    const debugContent = document.getElementById('debug-log-content');
-                    if (debugContent) {
-                        debugContent.innerHTML = debugLogs.slice(-50).map(log => `<div>${log}</div>`).join('');
-                    }
-                }
-                tapCount = 0;
-            }
-            clearTimeout(tapTimeout);
-            tapTimeout = setTimeout(() => { tapCount = 0; }, 500);
-        });
-    }
-});
-
-// =========================================
 // DOM Elements
 // =========================================
 const views = {
@@ -99,16 +44,12 @@ const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 // Detect if running as installed PWA (standalone mode)
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-debugLog(`Platform detection - iOS: ${isIOS}, Standalone: ${isStandalone}`);
-
 async function initApp() {
     applyTranslations(state.currentLang);
 
     // Listen for auth state changes
     onAuthStateChanged(auth, async (user) => {
-        debugLog(`onAuthStateChanged called, user: ${user ? user.uid : 'null'}`);
         if (user) {
-            debugLog(`User signed in: ${user.uid}`);
             state.currentUser = user;
             // Show header nav and FABs when logged in
             document.getElementById('app-header').classList.remove('hidden');
@@ -124,7 +65,6 @@ async function initApp() {
             // Permission will be requested when user saves experiment settings
             // or taps the notification enable button
         } else {
-            debugLog("No user, showing login view...");
             state.currentUser = null;
             // Hide header nav and FABs when not logged in
             document.getElementById('app-header').classList.add('hidden');
@@ -138,7 +78,6 @@ async function initApp() {
     const loginBtn = document.getElementById('btn-google-login');
     if (loginBtn) {
         loginBtn.addEventListener('click', async () => {
-            debugLog("Login button clicked");
 
             // Show loading state
             loginBtn.disabled = true;
@@ -147,15 +86,12 @@ async function initApp() {
             try {
                 // Use signInWithPopup for all platforms
                 // Note: On iOS PWA, popup may open in Safari if needed
-                debugLog("Using signInWithPopup");
                 const result = await signInWithPopup(auth, googleProvider);
-                debugLog(`signInWithPopup successful: ${result.user.uid}`);
 
                 // Show welcome modal on login
                 const t = translations[state.currentLang];
                 showModal(t.login.welcomeMessage, true);
             } catch (error) {
-                debugLog(`Google sign-in error: ${error.code} - ${error.message}`, 'error');
 
                 // Reset button state
                 loginBtn.disabled = false;
@@ -164,12 +100,10 @@ async function initApp() {
                 // Handle specific error codes
                 if (error.code === 'auth/popup-closed-by-user') {
                     // User closed popup, don't show error
-                    debugLog("Popup closed by user, no error shown");
                 } else if (error.code === 'auth/popup-blocked') {
                     showModal('ポップアップがブロックされました。ブラウザの設定でポップアップを許可してください。');
                 } else if (error.code === 'auth/cancelled-popup-request') {
                     // Multiple popup requests, ignore
-                    debugLog("Cancelled popup request, no error shown");
                 } else {
                     showModal(translations[state.currentLang].common.error + ': ' + error.message);
                 }
@@ -187,7 +121,6 @@ async function initApp() {
                 await signOut(auth);
                 showModal(t.nav.messages.logoutSuccess);
             } catch (error) {
-                debugLog(`Sign-out error: ${error.message}`, 'error');
                 showModal(t.common.error);
             }
         });
@@ -197,7 +130,6 @@ async function initApp() {
     const fabNotification = document.getElementById('fab-notification');
     if (fabNotification) {
         fabNotification.addEventListener('click', async () => {
-            debugLog("Notification FAB clicked");
             const t = translations[state.currentLang];
 
             // If already granted, show modal message
@@ -230,13 +162,11 @@ async function initApp() {
 async function requestNotificationPermission(userId) {
     // Check if messaging is supported
     if (!messaging) {
-        debugLog("Firebase Messaging not supported in this browser", "warn");
         return;
     }
 
     // Check if Service Worker is supported
     if (!('serviceWorker' in navigator)) {
-        debugLog("Service Worker not supported in this browser", "warn");
         return;
     }
 
@@ -245,62 +175,48 @@ async function requestNotificationPermission(userId) {
 
     // If already denied, don't ask again
     if (permissionStatus === 'denied') {
-        debugLog("Notification permission was previously denied", "info");
         return;
     }
 
     try {
         // Request permission
-        debugLog("Requesting notification permission...");
         const permission = await Notification.requestPermission();
-        debugLog(`Notification permission result: ${permission}`);
         localStorage.setItem('notificationPermission', permission);
 
         if (permission === 'granted') {
-            debugLog("Notification permission granted");
 
             // Register service worker explicitly for GitHub Pages subdirectory hosting
-            debugLog("Registering Firebase Messaging Service Worker...");
             const swRegistration = await navigator.serviceWorker.register(
                 './firebase-messaging-sw.js',
                 { scope: './' }
             );
-            debugLog(`Service Worker registration state: ${swRegistration.active ? 'active' : swRegistration.installing ? 'installing' : swRegistration.waiting ? 'waiting' : 'unknown'}`);
 
             // Wait for service worker to be ready (important for iOS)
-            debugLog("Waiting for Service Worker to be ready...");
             await navigator.serviceWorker.ready;
-            debugLog("Service Worker is ready");
 
             // If the SW is installing or waiting, wait for it to become active
             if (swRegistration.installing || swRegistration.waiting) {
-                debugLog("Service Worker is installing/waiting, waiting for active state...");
                 await new Promise((resolve) => {
                     const sw = swRegistration.installing || swRegistration.waiting;
                     sw.addEventListener('statechange', (e) => {
-                        debugLog(`Service Worker state changed to: ${e.target.state}`);
                         if (e.target.state === 'activated') {
-                            debugLog("Service Worker activated");
                             resolve();
                         }
                     });
                     // Timeout after 10 seconds
                     setTimeout(() => {
-                        debugLog("Service Worker activation timeout, proceeding anyway", "warn");
                         resolve();
                     }, 10000);
                 });
             }
 
             // Get FCM token with the registered service worker
-            debugLog("Getting FCM token...");
             const token = await getToken(messaging, {
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: swRegistration
             });
 
             if (token) {
-                debugLog(`FCM Token obtained: ${token.substring(0, 20)}...`);
 
                 // Save token to Firestore for this user
                 await saveFcmToken(userId, token);
@@ -311,15 +227,10 @@ async function requestNotificationPermission(userId) {
                 // Update notification FAB to show enabled state
                 updateNotificationFabState();
             } else {
-                debugLog("No FCM registration token available. This may happen on iOS if not running as installed PWA.", "warn");
             }
         } else {
-            debugLog("Notification permission denied");
         }
     } catch (error) {
-        debugLog(`Error requesting notification permission: ${error.message}`, "error");
-        debugLog(`Error name: ${error.name}`, "error");
-        debugLog(`Error code: ${error.code}`, "error");
     }
 }
 
@@ -364,7 +275,6 @@ function updateNotificationFabState() {
 
     // Check notification permission status
     const permission = Notification.permission;
-    debugLog(`Notification permission status: ${permission}`);
 
     if (permission === 'granted') {
         // Enabled state - primary color with bell icon
@@ -636,12 +546,9 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
             createdAt: serverTimestamp(),
             userId: state.currentUser.uid
         });
-
-        debugLog(`Experiment saved with ID: ${docRef.id}`);
         showModal(t.settings.messages.saveSuccess);
 
         // Request Notification Permission (user interaction triggered - this works on iOS)
-        debugLog("Requesting notification permission after experiment save...");
         await requestNotificationPermission(state.currentUser.uid);
 
         // Refresh state
