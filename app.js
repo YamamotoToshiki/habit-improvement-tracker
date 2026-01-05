@@ -152,10 +152,22 @@ async function initApp() {
                 return;
             }
 
-            // Otherwise request permission
+            // Request permission (only the permission prompt)
             if (state.currentUser) {
-                await requestNotificationPermission(state.currentUser.uid);
+                const permission = await Notification.requestPermission();
+                localStorage.setItem('notificationPermission', permission);
+
+                // Immediately update FAB state after permission decision
                 updateNotificationFabState();
+
+                if (permission === 'granted') {
+                    showModal(t.common.notificationEnabled);
+
+                    // Run FCM token registration in background (non-blocking)
+                    requestNotificationPermission(state.currentUser.uid)
+                        .then(() => console.log('✅ FCM token registration completed (background)'))
+                        .catch((error) => console.error('FCM registration error:', error));
+                }
             }
         });
     }
