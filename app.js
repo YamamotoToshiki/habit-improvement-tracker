@@ -570,10 +570,14 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
 
         showModal(t.settings.messages.saveSuccess);
 
-        // --- requestNotificationPermission timing ---
-        const notifStart = performance.now();
-        await requestNotificationPermission(state.currentUser.uid);
-        metrics.notification = Math.round(performance.now() - notifStart);
+        // --- requestNotificationPermission (async, non-blocking) ---
+        // Run in background to avoid blocking UI
+        requestNotificationPermission(state.currentUser.uid)
+            .then(() => {
+                updateNotificationFabState();
+                console.log('✅ Notification permission processing completed (background)');
+            })
+            .catch((error) => console.error('Notification error:', error));
 
         // --- checkActiveExperiment timing ---
         const checkStart = performance.now();
