@@ -579,10 +579,29 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
             })
             .catch((error) => console.error('Notification error:', error));
 
-        // --- checkActiveExperiment timing ---
-        const checkStart = performance.now();
-        await checkActiveExperiment(state.currentUser.uid);
-        metrics.checkExperiment = Math.round(performance.now() - checkStart);
+        // --- Optimistic UI Update (no Firestore query) ---
+        const optimisticStart = performance.now();
+        const durationNum = parseInt(durationVal, 10);
+        const startAt = Timestamp.now();
+        const endAt = Timestamp.fromDate(new Date(Date.now() + durationNum * 24 * 60 * 60 * 1000));
+
+        // Set state directly from saved data (skip query)
+        state.currentExperiment = {
+            id: docRef.id,
+            strategy: finalStrategy,
+            action: actionVal,
+            durationDays: durationNum,
+            startAt: startAt,
+            endAt: endAt,
+            notificationTime: notificationVal,
+            userId: state.currentUser.uid
+        };
+
+        // Update UI synchronously
+        updateSettingsViewState(true);
+        switchView('record');
+        await loadDailyRecord();
+        metrics.optimisticUI = Math.round(performance.now() - optimisticStart);
 
         // ========== Performance Measurement Result ==========
         metrics.total = Math.round(performance.now() - totalStart);
