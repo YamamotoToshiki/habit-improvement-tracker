@@ -2,6 +2,20 @@ import { auth, db, googleProvider, messaging, getToken, onMessage, VAPID_KEY, si
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { collection, query, where, getDocs, getDoc, addDoc, updateDoc, setDoc, doc, Timestamp, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+// Web Vitals - Performance Monitoring
+import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'https://unpkg.com/web-vitals@4/dist/web-vitals.attribution.js?module';
+
+// Log Web Vitals metrics
+function logWebVitals(metric) {
+    console.log(`[Web Vitals] ${metric.name}: ${metric.value.toFixed(2)} (${metric.rating})`);
+}
+
+onCLS(logWebVitals);
+onINP(logWebVitals);
+onLCP(logWebVitals);
+onFCP(logWebVitals);
+onTTFB(logWebVitals);
+
 // =========================================
 // State Management
 // =========================================
