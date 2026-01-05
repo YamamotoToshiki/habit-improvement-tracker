@@ -549,7 +549,13 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
     // Confirm
     if (!confirm(t.settings.messages.saveConfirm)) return;
 
+    // ========== Performance Measurement Start ==========
+    const metrics = {};
+    const totalStart = performance.now();
+
     try {
+        // --- addDoc timing ---
+        const addDocStart = performance.now();
         const docRef = await addDoc(collection(db, "experiments"), {
             strategy: finalStrategy,
             action: actionVal,
@@ -560,13 +566,24 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
             createdAt: serverTimestamp(),
             userId: state.currentUser.uid
         });
+        metrics.addDoc = Math.round(performance.now() - addDocStart);
+
         showModal(t.settings.messages.saveSuccess);
 
-        // Request Notification Permission (user interaction triggered - this works on iOS)
+        // --- requestNotificationPermission timing ---
+        const notifStart = performance.now();
         await requestNotificationPermission(state.currentUser.uid);
+        metrics.notification = Math.round(performance.now() - notifStart);
 
-        // Refresh state
+        // --- checkActiveExperiment timing ---
+        const checkStart = performance.now();
         await checkActiveExperiment(state.currentUser.uid);
+        metrics.checkExperiment = Math.round(performance.now() - checkStart);
+
+        // ========== Performance Measurement Result ==========
+        metrics.total = Math.round(performance.now() - totalStart);
+        console.log('🔍 Save Button Performance Metrics (ms):');
+        console.table(metrics);
 
     } catch (e) {
         console.error("Error adding document: ", e);
