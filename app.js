@@ -170,7 +170,7 @@ async function initApp() {
                     showModal(t.common.notificationEnabled);
 
                     // Run FCM token registration in background (non-blocking)
-                    requestNotificationPermission(state.currentUser.uid)
+                    registerFcmToken(state.currentUser.uid)
                         .then(() => console.log('✅ FCM token registration completed (background)'))
                         .catch((error) => console.error('FCM registration error:', error));
                 }
@@ -194,11 +194,13 @@ async function initApp() {
 async function requestNotificationPermission(userId) {
     // Check if messaging is supported
     if (!messaging) {
+        console.log('FCM: messaging not supported');
         return;
     }
 
     // Check if Service Worker is supported
     if (!('serviceWorker' in navigator)) {
+        console.log('FCM: serviceWorker not supported');
         return;
     }
 
@@ -207,6 +209,7 @@ async function requestNotificationPermission(userId) {
 
     // If already denied, don't ask again
     if (permissionStatus === 'denied') {
+        console.log('FCM: permission already denied');
         return;
     }
 
@@ -216,53 +219,86 @@ async function requestNotificationPermission(userId) {
         localStorage.setItem('notificationPermission', permission);
 
         if (permission === 'granted') {
-
-            // Register service worker explicitly for GitHub Pages subdirectory hosting
-            const swRegistration = await navigator.serviceWorker.register(
-                './firebase-messaging-sw.js',
-                { scope: './' }
-            );
-
-            // Wait for service worker to be ready (important for iOS)
-            await navigator.serviceWorker.ready;
-
-            // If the SW is installing or waiting, wait for it to become active
-            if (swRegistration.installing || swRegistration.waiting) {
-                await new Promise((resolve) => {
-                    const sw = swRegistration.installing || swRegistration.waiting;
-                    sw.addEventListener('statechange', (e) => {
-                        if (e.target.state === 'activated') {
-                            resolve();
-                        }
-                    });
-                    // Timeout after 10 seconds
-                    setTimeout(() => {
-                        resolve();
-                    }, 10000);
-                });
-            }
-
-            // Get FCM token with the registered service worker
-            const token = await getToken(messaging, {
-                vapidKey: VAPID_KEY,
-                serviceWorkerRegistration: swRegistration
-            });
-
-            if (token) {
-
-                // Save token to Firestore for this user
-                await saveFcmToken(userId, token);
-
-                // Set up foreground message handler
-                setupForegroundMessageHandler();
-
-                // Update notification FAB to show enabled state
-                updateNotificationFabState();
-            } else {
-            }
+            await registerFcmToken(userId);
         } else {
+            console.log('FCM: permission not granted:', permission);
         }
     } catch (error) {
+        console.error('FCM: requestNotificationPermission error:', error);
+    }
+}
+
+// Register FCM token without requesting permission (for when permission is already granted)
+async function registerFcmToken(userId) {
+    // Check if messaging is supported
+    if (!messaging) {
+        console.log('FCM: messaging not supported');
+        return;
+    }
+
+    // Check if Service Worker is supported
+    if (!('serviceWorker' in navigator)) {
+        console.log('FCM: serviceWorker not supported');
+        return;
+    }
+
+    try {
+        // Register service worker explicitly for GitHub Pages subdirectory hosting
+        console.log('FCM: Registering service worker...');
+        const swRegistration = await navigator.serviceWorker.register(
+            './firebase-messaging-sw.js',
+            { scope: './' }
+        );
+        console.log('FCM: Service worker registered');
+
+        // Wait for service worker to be ready (important for iOS)
+        await navigator.serviceWorker.ready;
+        console.log('FCM: Service worker ready');
+
+        // If the SW is installing or waiting, wait for it to become active
+        if (swRegistration.installing || swRegistration.waiting) {
+            console.log('FCM: Waiting for service worker activation...');
+            await new Promise((resolve) => {
+                const sw = swRegistration.installing || swRegistration.waiting;
+                sw.addEventListener('statechange', (e) => {
+                    if (e.target.state === 'activated') {
+                        console.log('FCM: Service worker activated');
+                        resolve();
+                    }
+                });
+                // Timeout after 10 seconds
+                setTimeout(() => {
+                    console.log('FCM: Service worker activation timeout');
+                    resolve();
+                }, 10000);
+            });
+        }
+
+        // Get FCM token with the registered service worker
+        console.log('FCM: Getting token...');
+        const token = await getToken(messaging, {
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: swRegistration
+        });
+
+        if (token) {
+            console.log('FCM: Token obtained:', token.substring(0, 20) + '...');
+
+            // Save token to Firestore for this user
+            await saveFcmToken(userId, token);
+            console.log('FCM: Token saved to Firestore');
+
+            // Set up foreground message handler
+            setupForegroundMessageHandler();
+
+            // Update notification FAB to show enabled state
+            updateNotificationFabState();
+        } else {
+            console.log('FCM: No token obtained');
+        }
+    } catch (error) {
+        console.error('FCM: registerFcmToken error:', error);
+        throw error; // Re-throw for caller to handle
     }
 }
 
@@ -567,7 +603,13 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
     // Confirm
     if (!confirm(t.settings.messages.saveConfirm)) return;
 
+    // ========== Performance Measurement Start ==========
+    const metrics = {};
+    const totalStart = performance.now();
+
     try {
+        // --- addDoc timing ---
+        const addDocStart = performance.now();
         const docRef = await addDoc(collection(db, "experiments"), {
             strategy: finalStrategy,
             action: actionVal,
@@ -578,6 +620,7 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
             createdAt: serverTimestamp(),
             userId: state.currentUser.uid
         });
+        metrics.addDoc = Math.round(performance.now() - addDocStart);
 
         showModal(t.settings.messages.saveSuccess);
 
@@ -591,6 +634,7 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
             .catch((error) => console.error('Notification error:', error));
 
         // --- Optimistic UI Update (no Firestore query) ---
+        const optimisticStart = performance.now();
         const durationNum = parseInt(durationVal, 10);
         const startAt = Timestamp.now();
         const endAt = Timestamp.fromDate(new Date(Date.now() + durationNum * 24 * 60 * 60 * 1000));
@@ -611,6 +655,12 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
         updateSettingsViewState(true);
         switchView('record');
         await loadDailyRecord();
+        metrics.optimisticUI = Math.round(performance.now() - optimisticStart);
+
+        // ========== Performance Measurement Result ==========
+        metrics.total = Math.round(performance.now() - totalStart);
+        console.log('🔍 Save Button Performance Metrics (ms):');
+        console.table(metrics);
 
     } catch (e) {
         console.error("Error adding document: ", e);
