@@ -167,8 +167,6 @@ async function initApp() {
                 updateNotificationFabState();
 
                 if (permission === 'granted') {
-                    showModal(t.common.notificationEnabled);
-
                     // Run FCM token registration in background (non-blocking)
                     requestNotificationPermission(state.currentUser.uid)
                         .then(() => console.log('✅ FCM token registration completed (background)'))
