@@ -163,9 +163,6 @@ async function initApp() {
                 const permission = await Notification.requestPermission();
                 localStorage.setItem('notificationPermission', permission);
 
-                // Immediately update FAB state after permission decision
-                updateNotificationFabState();
-
                 if (permission === 'granted') {
                     // Run FCM token registration in background (non-blocking)
                     requestNotificationPermission(state.currentUser.uid)
