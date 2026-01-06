@@ -1,15 +1,6 @@
 # requirements
 habit-tracker-requirements.md
 
-# console directory
-console-logs/
-
-# reference files
-reference-files/
-
-# performance optimization
-performance-optimization/
-
 # Logs
 logs
 *.log
