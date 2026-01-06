@@ -163,14 +163,16 @@ async function initApp() {
                 const permission = await Notification.requestPermission();
                 localStorage.setItem('notificationPermission', permission);
 
+                // Immediately update FAB state after permission decision
+                updateNotificationFabState();
+
                 if (permission === 'granted') {
+                    showModal(t.common.notificationEnabled);
+
                     // Run FCM token registration in background (non-blocking)
                     requestNotificationPermission(state.currentUser.uid)
-                        .then(() => {
-                            updateNotificationFabState();
-                            console.log('✅ Notification permission processing completed (background)');
-                        })
-                        .catch((error) => console.error('Notification error:', error));
+                        .then(() => console.log('✅ FCM token registration completed (background)'))
+                        .catch((error) => console.error('FCM registration error:', error));
                 }
             }
         });
@@ -565,13 +567,7 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
     // Confirm
     if (!confirm(t.settings.messages.saveConfirm)) return;
 
-    // ========== Performance Measurement Start ==========
-    const metrics = {};
-    const totalStart = performance.now();
-
     try {
-        // --- addDoc timing ---
-        const addDocStart = performance.now();
         const docRef = await addDoc(collection(db, "experiments"), {
             strategy: finalStrategy,
             action: actionVal,
@@ -582,7 +578,6 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
             createdAt: serverTimestamp(),
             userId: state.currentUser.uid
         });
-        metrics.addDoc = Math.round(performance.now() - addDocStart);
 
         showModal(t.settings.messages.saveSuccess);
 
@@ -596,7 +591,6 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
             .catch((error) => console.error('Notification error:', error));
 
         // --- Optimistic UI Update (no Firestore query) ---
-        const optimisticStart = performance.now();
         const durationNum = parseInt(durationVal, 10);
         const startAt = Timestamp.now();
         const endAt = Timestamp.fromDate(new Date(Date.now() + durationNum * 24 * 60 * 60 * 1000));
@@ -617,12 +611,6 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
         updateSettingsViewState(true);
         switchView('record');
         await loadDailyRecord();
-        metrics.optimisticUI = Math.round(performance.now() - optimisticStart);
-
-        // ========== Performance Measurement Result ==========
-        metrics.total = Math.round(performance.now() - totalStart);
-        console.log('🔍 Save Button Performance Metrics (ms):');
-        console.table(metrics);
 
     } catch (e) {
         console.error("Error adding document: ", e);
