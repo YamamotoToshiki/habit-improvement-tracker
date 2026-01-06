@@ -210,7 +210,7 @@ const translations = {
             error: "エラーが発生しました。",
             close: "閉じる",
             notificationEnabled: "通知は有効です。",
-            notificationDisabled: "通知は無効です。\n端末の設定から許可してください。"
+            notificationDisabled: "通知は無効です。端末の設定から許可してください。"
         }
     },
     en: {
