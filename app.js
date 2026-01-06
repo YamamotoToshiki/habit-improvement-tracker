@@ -169,8 +169,11 @@ async function initApp() {
                 if (permission === 'granted') {
                     // Run FCM token registration in background (non-blocking)
                     requestNotificationPermission(state.currentUser.uid)
-                        .then(() => console.log('✅ FCM token registration completed (background)'))
-                        .catch((error) => console.error('FCM registration error:', error));
+                        .then(() => {
+                            updateNotificationFabState();
+                            console.log('✅ Notification permission processing completed (background)');
+                        })
+                        .catch((error) => console.error('Notification error:', error));
                 }
             }
         });
