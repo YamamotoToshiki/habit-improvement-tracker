@@ -152,6 +152,12 @@ async function initApp() {
                 return;
             }
 
+            // If already denied, show modal message
+            if (Notification.permission === 'denied') {
+                showModal(t.common.notificationDisabled);
+                return;
+            }
+
             // Request permission (only the permission prompt)
             if (state.currentUser) {
                 const permission = await Notification.requestPermission();
