@@ -154,7 +154,7 @@ async function initApp() {
 
             // If already denied, show modal message
             if (Notification.permission === 'denied') {
-                showModal(t.common.notificationDisabled);
+                showModal(t.common.notificationDisabled.replace(/\n/g, '<br>'));
                 return;
             }
 
