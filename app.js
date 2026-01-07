@@ -77,18 +77,10 @@ async function initApp() {
             if (currentPermission === 'granted' && storedPermission !== 'granted') {
                 console.log('🔔 Permission change detected on app startup (granted)');
                 localStorage.setItem('notificationPermission', 'granted');
-                setNotificationFabLoading(true);
-                const t = translations[state.currentLang];
+                updateNotificationFabState();
                 registerFcmToken(user.uid)
-                    .then(() => {
-                        console.log('✅ FCM token registered (app startup)');
-                        updateNotificationFabState();
-                        showModal(t.common.notificationEnabled);
-                    })
-                    .catch((error) => {
-                        console.error('FCM registration error:', error);
-                        updateNotificationFabState();
-                    });
+                    .then(() => console.log('✅ FCM token registered (app startup)'))
+                    .catch((error) => console.error('FCM registration error:', error));
             } else if (currentPermission === 'denied' && storedPermission !== 'denied') {
                 console.log('🔔 Permission change detected on app startup (denied)');
                 localStorage.setItem('notificationPermission', 'denied');
@@ -178,19 +170,13 @@ async function initApp() {
                 if (storedPermission !== 'granted') {
                     // User changed permission externally - register FCM token
                     localStorage.setItem('notificationPermission', 'granted');
-                    setNotificationFabLoading(true);
+                    updateNotificationFabState();
 
                     if (state.currentUser) {
+                        showModal(t.common.notificationEnabled);
                         registerFcmToken(state.currentUser.uid)
-                            .then(() => {
-                                console.log('✅ FCM token registration completed (re-enabled)');
-                                updateNotificationFabState();
-                                showModal(t.common.notificationEnabled);
-                            })
-                            .catch((error) => {
-                                console.error('FCM registration error:', error);
-                                updateNotificationFabState();
-                            });
+                            .then(() => console.log('✅ FCM token registration completed (re-enabled)'))
+                            .catch((error) => console.error('FCM registration error:', error));
                     }
                 } else {
                     showModal(t.common.notificationEnabled);
@@ -212,22 +198,15 @@ async function initApp() {
                 const permission = await Notification.requestPermission();
                 localStorage.setItem('notificationPermission', permission);
 
-                if (permission === 'granted') {
-                    // Show loading state during FCM registration
-                    setNotificationFabLoading(true);
+                // Immediately update FAB state after permission decision
+                updateNotificationFabState();
 
+                if (permission === 'granted') {
+                    showModal(t.common.notificationEnabled);
+                    // Run FCM token registration in background (non-blocking)
                     registerFcmToken(state.currentUser.uid)
-                        .then(() => {
-                            console.log('✅ FCM token registration completed (background)');
-                            updateNotificationFabState();
-                            showModal(t.common.notificationEnabled);
-                        })
-                        .catch((error) => {
-                            console.error('FCM registration error:', error);
-                            updateNotificationFabState();
-                        });
-                } else {
-                    updateNotificationFabState();
+                        .then(() => console.log('✅ FCM token registration completed (background)'))
+                        .catch((error) => console.error('FCM registration error:', error));
                 }
             }
         });
@@ -246,7 +225,6 @@ async function initApp() {
     // Notification Permission Change Detection
     // =========================================
 
-
     // Method 1: Permissions API (Chrome, Edge, Firefox - not Safari)
     if ('permissions' in navigator) {
         navigator.permissions.query({ name: 'notifications' }).then(permission => {
@@ -257,20 +235,12 @@ async function initApp() {
                 if (permission.state === 'granted' && storedPermission !== 'granted') {
                     // Permission was re-enabled externally
                     localStorage.setItem('notificationPermission', 'granted');
-                    setNotificationFabLoading(true);
-                    const t = translations[state.currentLang];
+                    updateNotificationFabState();
 
                     if (state.currentUser) {
                         registerFcmToken(state.currentUser.uid)
-                            .then(() => {
-                                console.log('✅ FCM token registered (permission change detected)');
-                                updateNotificationFabState();
-                                showModal(t.common.notificationEnabled);
-                            })
-                            .catch((error) => {
-                                console.error('FCM registration error:', error);
-                                updateNotificationFabState();
-                            });
+                            .then(() => console.log('✅ FCM token registered (permission change detected)'))
+                            .catch((error) => console.error('FCM registration error:', error));
                     }
                 } else if (permission.state === 'denied') {
                     localStorage.setItem('notificationPermission', 'denied');
@@ -292,19 +262,11 @@ async function initApp() {
             if (currentPermission === 'granted' && storedPermission !== 'granted') {
                 console.log('🔔 Permission change detected on visibility (granted)');
                 localStorage.setItem('notificationPermission', 'granted');
-                setNotificationFabLoading(true);
-                const t = translations[state.currentLang];
+                updateNotificationFabState();
 
                 registerFcmToken(state.currentUser.uid)
-                    .then(() => {
-                        console.log('✅ FCM token registered (visibility change)');
-                        updateNotificationFabState();
-                        showModal(t.common.notificationEnabled);
-                    })
-                    .catch((error) => {
-                        console.error('FCM registration error:', error);
-                        updateNotificationFabState();
-                    });
+                    .then(() => console.log('✅ FCM token registered (visibility change)'))
+                    .catch((error) => console.error('FCM registration error:', error));
             } else if (currentPermission === 'denied' && storedPermission !== 'denied') {
                 console.log('🔔 Permission change detected on visibility (denied)');
                 localStorage.setItem('notificationPermission', 'denied');
@@ -467,10 +429,6 @@ function updateNotificationFabState() {
     const icon = fabNotification.querySelector('i');
     if (!icon) return;
 
-    // Clear loading state
-    fabNotification.classList.remove('fab-loading');
-    icon.classList.remove('fa-spinner');
-
     // Check notification permission status
     const permission = Notification.permission;
 
@@ -486,28 +444,6 @@ function updateNotificationFabState() {
         icon.classList.remove('fa-bell');
         icon.classList.add('fa-bell-slash');
         fabNotification.title = '通知: 無効（タップで許可）';
-    }
-}
-
-// Set notification FAB to loading state
-function setNotificationFabLoading(isLoading) {
-    const fabNotification = document.getElementById('fab-notification');
-    if (!fabNotification) return;
-
-    const icon = fabNotification.querySelector('i');
-    if (!icon) return;
-
-    if (isLoading) {
-        // Loading state - gray with spinner
-        fabNotification.classList.remove('fab-secondary');
-        fabNotification.classList.add('fab-loading');
-        icon.classList.remove('fa-bell', 'fa-bell-slash');
-        icon.classList.add('fa-spinner');
-        fabNotification.title = '通知: 読み込み中';
-    } else {
-        // Remove loading state (updateNotificationFabState will set correct state)
-        fabNotification.classList.remove('fab-loading');
-        icon.classList.remove('fa-spinner');
     }
 }
 

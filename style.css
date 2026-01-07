@@ -760,18 +760,6 @@ button:disabled {
     }
 }
 
-/* FAB Loading State - Grayed out version of enabled state */
-.fab.fab-loading {
-    background: linear-gradient(135deg, #9CA3AF 0%, #D1D5DB 100%);
-    box-shadow: var(--shadow-md);
-    pointer-events: none;
-    cursor: wait;
-}
-
-.fab.fab-loading i {
-    animation: fa-spin 1s infinite linear;
-}
-
 /* Toggle Switch - Modern replacement for checkbox */
 .toggle-group {
     display: flex;
