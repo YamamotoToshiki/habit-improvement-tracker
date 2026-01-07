@@ -203,6 +203,60 @@ async function initApp() {
             showModal(t.login.welcomeMessage, true);
         });
     }
+
+    // =========================================
+    // Notification Permission Change Detection
+    // =========================================
+
+    // Method 1: Permissions API (Chrome, Edge, Firefox - not Safari)
+    if ('permissions' in navigator) {
+        navigator.permissions.query({ name: 'notifications' }).then(permission => {
+            permission.onchange = () => {
+                console.log('🔔 Notification permission changed:', permission.state);
+                const storedPermission = localStorage.getItem('notificationPermission');
+
+                if (permission.state === 'granted' && storedPermission !== 'granted') {
+                    // Permission was re-enabled externally
+                    localStorage.setItem('notificationPermission', 'granted');
+                    updateNotificationFabState();
+
+                    if (state.currentUser) {
+                        registerFcmToken(state.currentUser.uid)
+                            .then(() => console.log('✅ FCM token registered (permission change detected)'))
+                            .catch((error) => console.error('FCM registration error:', error));
+                    }
+                } else if (permission.state === 'denied') {
+                    localStorage.setItem('notificationPermission', 'denied');
+                    updateNotificationFabState();
+                }
+            };
+        }).catch(err => {
+            console.log('Permissions API not fully supported:', err);
+        });
+    }
+
+    // Method 2: visibilitychange event (fallback for iOS/Safari)
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && state.currentUser) {
+            const storedPermission = localStorage.getItem('notificationPermission');
+            const currentPermission = Notification.permission;
+
+            // Check if permission changed while app was in background
+            if (currentPermission === 'granted' && storedPermission !== 'granted') {
+                console.log('🔔 Permission change detected on visibility (granted)');
+                localStorage.setItem('notificationPermission', 'granted');
+                updateNotificationFabState();
+
+                registerFcmToken(state.currentUser.uid)
+                    .then(() => console.log('✅ FCM token registered (visibility change)'))
+                    .catch((error) => console.error('FCM registration error:', error));
+            } else if (currentPermission === 'denied' && storedPermission !== 'denied') {
+                console.log('🔔 Permission change detected on visibility (denied)');
+                localStorage.setItem('notificationPermission', 'denied');
+                updateNotificationFabState();
+            }
+        }
+    });
 }
 
 // =========================================
