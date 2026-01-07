@@ -749,6 +749,15 @@ button:disabled {
     box-shadow: var(--shadow-lg), 0 0 30px rgba(239, 68, 68, 0.5);
 }
 
+/* FAB Loading State - Grayed-out primary gradient */
+.fab.fab-loading {
+    background: linear-gradient(135deg, #7FB3BD 0%, #9DD4E4 100%);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(127, 179, 189, 0.3);
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
 /* FAB Notification - Position above help FAB */
 #fab-notification {
     bottom: 96px;
