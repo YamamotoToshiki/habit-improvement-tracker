@@ -77,10 +77,20 @@ async function initApp() {
             if (currentPermission === 'granted' && storedPermission !== 'granted') {
                 console.log('🔔 Permission change detected on app startup (granted)');
                 localStorage.setItem('notificationPermission', 'granted');
-                updateNotificationFabState();
+                updateNotificationFabState('loading');
                 registerFcmToken(user.uid)
-                    .then(() => console.log('✅ FCM token registered (app startup)'))
-                    .catch((error) => console.error('FCM registration error:', error));
+                    .then((success) => {
+                        if (success) {
+                            updateNotificationFabState('granted');
+                        } else {
+                            updateNotificationFabState();
+                        }
+                        console.log('✅ FCM token registered (app startup)');
+                    })
+                    .catch((error) => {
+                        console.error('FCM registration error:', error);
+                        updateNotificationFabState();
+                    });
             } else if (currentPermission === 'denied' && storedPermission !== 'denied') {
                 console.log('🔔 Permission change detected on app startup (denied)');
                 localStorage.setItem('notificationPermission', 'denied');
@@ -252,12 +262,22 @@ async function initApp() {
                 if (permission.state === 'granted' && storedPermission !== 'granted') {
                     // Permission was re-enabled externally
                     localStorage.setItem('notificationPermission', 'granted');
-                    updateNotificationFabState();
+                    updateNotificationFabState('loading');
 
                     if (state.currentUser) {
                         registerFcmToken(state.currentUser.uid)
-                            .then(() => console.log('✅ FCM token registered (permission change detected)'))
-                            .catch((error) => console.error('FCM registration error:', error));
+                            .then((success) => {
+                                if (success) {
+                                    updateNotificationFabState('granted');
+                                } else {
+                                    updateNotificationFabState();
+                                }
+                                console.log('✅ FCM token registered (permission change detected)');
+                            })
+                            .catch((error) => {
+                                console.error('FCM registration error:', error);
+                                updateNotificationFabState();
+                            });
                     }
                 } else if (permission.state === 'denied') {
                     localStorage.setItem('notificationPermission', 'denied');
@@ -279,11 +299,21 @@ async function initApp() {
             if (currentPermission === 'granted' && storedPermission !== 'granted') {
                 console.log('🔔 Permission change detected on visibility (granted)');
                 localStorage.setItem('notificationPermission', 'granted');
-                updateNotificationFabState();
+                updateNotificationFabState('loading');
 
                 registerFcmToken(state.currentUser.uid)
-                    .then(() => console.log('✅ FCM token registered (visibility change)'))
-                    .catch((error) => console.error('FCM registration error:', error));
+                    .then((success) => {
+                        if (success) {
+                            updateNotificationFabState('granted');
+                        } else {
+                            updateNotificationFabState();
+                        }
+                        console.log('✅ FCM token registered (visibility change)');
+                    })
+                    .catch((error) => {
+                        console.error('FCM registration error:', error);
+                        updateNotificationFabState();
+                    });
             } else if (currentPermission === 'denied' && storedPermission !== 'denied') {
                 console.log('🔔 Permission change detected on visibility (denied)');
                 localStorage.setItem('notificationPermission', 'denied');
@@ -751,14 +781,44 @@ document.getElementById('btn-save-experiment').addEventListener('click', async (
 
         showModal(t.settings.messages.saveSuccess);
 
-        // --- requestNotificationPermission (async, non-blocking) ---
-        // Run in background to avoid blocking UI
-        requestNotificationPermission(state.currentUser.uid)
-            .then(() => {
-                updateNotificationFabState();
-                console.log('✅ Notification permission processing completed (background)');
-            })
-            .catch((error) => console.error('Notification error:', error));
+        // --- Notification Permission (async, non-blocking) ---
+        // Show loading state on FAB, then update after completion (no modal)
+        if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            // Permission not yet decided - request it
+            updateNotificationFabState('loading');
+            requestNotificationPermission(state.currentUser.uid)
+                .then((success) => {
+                    if (success) {
+                        updateNotificationFabState('granted');
+                    } else {
+                        updateNotificationFabState();
+                    }
+                    console.log('✅ Notification permission processing completed (background)');
+                })
+                .catch((error) => {
+                    console.error('Notification error:', error);
+                    updateNotificationFabState();
+                });
+        } else if (Notification.permission === 'granted') {
+            // Already granted - just register token
+            const storedPermission = localStorage.getItem('notificationPermission');
+            if (storedPermission !== 'granted') {
+                localStorage.setItem('notificationPermission', 'granted');
+                updateNotificationFabState('loading');
+                registerFcmToken(state.currentUser.uid)
+                    .then((success) => {
+                        if (success) {
+                            updateNotificationFabState('granted');
+                        } else {
+                            updateNotificationFabState();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('FCM registration error:', error);
+                        updateNotificationFabState();
+                    });
+            }
+        }
 
         // --- Optimistic UI Update (no Firestore query) ---
         const optimisticStart = performance.now();
