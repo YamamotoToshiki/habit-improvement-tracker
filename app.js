@@ -316,17 +316,29 @@ async function requestNotificationPermission(userId) {
     }
 }
 
+// Flag to prevent duplicate registration
+let isRegisteringFcmToken = false;
+
 // Register FCM token without requesting permission (for when permission is already granted)
 async function registerFcmToken(userId) {
+    // Prevent duplicate registration
+    if (isRegisteringFcmToken) {
+        console.log('FCM: Registration already in progress, skipping');
+        return;
+    }
+    isRegisteringFcmToken = true;
+
     // Check if messaging is supported
     if (!messaging) {
         console.log('FCM: messaging not supported');
+        isRegisteringFcmToken = false;
         return;
     }
 
     // Check if Service Worker is supported
     if (!('serviceWorker' in navigator)) {
         console.log('FCM: serviceWorker not supported');
+        isRegisteringFcmToken = false;
         return;
     }
 
@@ -387,6 +399,8 @@ async function registerFcmToken(userId) {
     } catch (error) {
         console.error('FCM: registerFcmToken error:', error);
         throw error; // Re-throw for caller to handle
+    } finally {
+        isRegisteringFcmToken = false;
     }
 }
 
