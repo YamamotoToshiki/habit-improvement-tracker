@@ -70,6 +70,23 @@ async function initApp() {
             document.getElementById('fab-help').classList.remove('hidden');
             document.getElementById('fab-notification').classList.remove('hidden');
             updateNotificationFabState();
+
+            // Check if notification permission was changed while app was closed
+            const storedPermission = localStorage.getItem('notificationPermission');
+            const currentPermission = Notification.permission;
+            if (currentPermission === 'granted' && storedPermission !== 'granted') {
+                console.log('🔔 Permission change detected on app startup (granted)');
+                localStorage.setItem('notificationPermission', 'granted');
+                updateNotificationFabState();
+                registerFcmToken(user.uid)
+                    .then(() => console.log('✅ FCM token registered (app startup)'))
+                    .catch((error) => console.error('FCM registration error:', error));
+            } else if (currentPermission === 'denied' && storedPermission !== 'denied') {
+                console.log('🔔 Permission change detected on app startup (denied)');
+                localStorage.setItem('notificationPermission', 'denied');
+                updateNotificationFabState();
+            }
+
             // Hide loading view
             views.loading.classList.add('hidden');
             await checkActiveExperiment(user.uid);
