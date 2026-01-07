@@ -111,6 +111,14 @@ async function initApp() {
             document.getElementById('app-header').classList.add('hidden');
             document.getElementById('fab-help').classList.add('hidden');
             document.getElementById('fab-notification').classList.add('hidden');
+
+            // Reset login button state when logged out
+            const loginBtn = document.getElementById('btn-google-login');
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fa-brands fa-google"></i> Googleでログイン';
+            }
+
             switchView('login');
         }
     });
@@ -128,6 +136,10 @@ async function initApp() {
                 // Use signInWithPopup for all platforms
                 // Note: On iOS PWA, popup may open in Safari if needed
                 const result = await signInWithPopup(auth, googleProvider);
+
+                // Reset button state after successful login
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fa-brands fa-google"></i> Googleでログイン';
 
                 // Show welcome modal on login
                 const t = translations[state.currentLang];
