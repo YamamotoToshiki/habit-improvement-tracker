@@ -146,14 +146,32 @@ async function initApp() {
         fabNotification.addEventListener('click', async () => {
             const t = translations[state.currentLang];
 
-            // If already granted, show modal message
+            // If already granted, check if FCM token needs to be registered
             if (Notification.permission === 'granted') {
-                showModal(t.common.notificationEnabled);
+                // Sync localStorage with actual permission
+                const storedPermission = localStorage.getItem('notificationPermission');
+                if (storedPermission !== 'granted') {
+                    // User changed permission externally - register FCM token
+                    localStorage.setItem('notificationPermission', 'granted');
+                    updateNotificationFabState();
+
+                    if (state.currentUser) {
+                        showModal(t.common.notificationEnabled);
+                        registerFcmToken(state.currentUser.uid)
+                            .then(() => console.log('✅ FCM token registration completed (re-enabled)'))
+                            .catch((error) => console.error('FCM registration error:', error));
+                    }
+                } else {
+                    showModal(t.common.notificationEnabled);
+                }
                 return;
             }
 
-            // If already denied, show modal message
+            // If denied in browser, show message
             if (Notification.permission === 'denied') {
+                // Sync localStorage with actual permission
+                localStorage.setItem('notificationPermission', 'denied');
+                updateNotificationFabState();
                 showModal(t.common.notificationDisabled, true);
                 return;
             }
@@ -167,6 +185,7 @@ async function initApp() {
                 updateNotificationFabState();
 
                 if (permission === 'granted') {
+                    showModal(t.common.notificationEnabled);
                     // Run FCM token registration in background (non-blocking)
                     registerFcmToken(state.currentUser.uid)
                         .then(() => console.log('✅ FCM token registration completed (background)'))
