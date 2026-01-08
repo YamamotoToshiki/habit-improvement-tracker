@@ -114,23 +114,18 @@ exports.sendScheduledNotifications = onSchedule(
                         continue;
                     }
 
-                    // Send notification to all tokens
+                    // Send notification to all tokens (data-only to prevent duplicate notifications)
                     const invalidTokens = [];
                     const sendPromises = fcmTokens.map(async (fcmToken) => {
                         const message = {
                             token: fcmToken,
-                            notification: {
+                            // Use data-only message to let service worker handle notification display
+                            // This prevents browser from auto-showing notification
+                            data: {
                                 title: "習慣改善トラッカー",
                                 body: "今日の習慣改善を記録しましょう！",
-                            },
-                            data: {
                                 url: "./index.html?view=record",
                                 experimentId: experimentDoc.id,
-                            },
-                            webpush: {
-                                fcmOptions: {
-                                    link: "./index.html?view=record",
-                                },
                             },
                         };
 
@@ -228,15 +223,14 @@ exports.testNotification = onRequest(
 
             logger.info(`Sending test notification to ${fcmTokens.length} device(s)`);
 
-            // Send test notification to all tokens
+            // Send test notification to all tokens (data-only to prevent duplicate notifications)
             const results = await Promise.all(fcmTokens.map(async (fcmToken) => {
                 const message = {
                     token: fcmToken,
-                    notification: {
+                    // Use data-only message to let service worker handle notification display
+                    data: {
                         title: "習慣改善トラッカー（テスト）",
                         body: "これはテスト通知です。",
-                    },
-                    data: {
                         url: "./index.html?view=record",
                     },
                 };

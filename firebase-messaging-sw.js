@@ -17,13 +17,14 @@ firebase.initializeApp({
 // Initialize Firebase Messaging
 const messaging = firebase.messaging();
 
-// Handle background messages
+// Handle background messages (data-only messages from FCM)
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Background message received:', payload);
 
-    const notificationTitle = payload.notification?.title || '習慣改善トラッカー';
+    // Read from data field (data-only messages don't have notification field)
+    const notificationTitle = payload.data?.title || '習慣改善トラッカー';
     const notificationOptions = {
-        body: payload.notification?.body || '今日の習慣改善を記録しましょう！',
+        body: payload.data?.body || '今日の習慣改善を記録しましょう！',
         icon: 'icon-192.png',
         badge: 'icon-192.png',
         data: {
