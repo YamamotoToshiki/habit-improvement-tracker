@@ -1,38 +1,7 @@
-// Firebase Messaging for Service Worker (Background messages)
-importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
+// PWA Service Worker for Habit Improvement Tracker
+// Handles caching for offline support
 
-// Firebase Configuration (must match firebase-config.js)
-firebase.initializeApp({
-    apiKey: "AIzaSyC2tsKeBheL6LOWhHwMvYBL4b89m0SVoFs",
-    authDomain: "habit-improvement-tracker.firebaseapp.com",
-    projectId: "habit-improvement-tracker",
-    storageBucket: "habit-improvement-tracker.firebasestorage.app",
-    messagingSenderId: "175411542830",
-    appId: "1:175411542830:web:bed0aad530a153b88718bf"
-});
-
-// Initialize Firebase Messaging
-const messaging = firebase.messaging();
-
-// Handle background messages
-messaging.onBackgroundMessage((payload) => {
-    console.log('[Service Worker] Background message received:', payload);
-
-    const notificationTitle = payload.notification?.title || '習慣改善トラッカー';
-    const notificationOptions = {
-        body: payload.notification?.body || '今日の習慣改善を記録しましょう！',
-        icon: 'icon-192.png',
-        badge: 'icon-192.png',
-        data: {
-            url: payload.data?.url || './index.html?view=record'
-        }
-    };
-
-    return self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-const CACHE_NAME = 'habit-tracker-v1';
+const CACHE_NAME = 'habit-tracker-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -99,32 +68,7 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Push Event
-self.addEventListener('push', (event) => {
-    console.log('[Service Worker] Push Received.');
-    let data = {};
-    if (event.data) {
-        try {
-            data = event.data.json();
-        } catch (e) {
-            data = { body: event.data.text() };
-        }
-    }
-
-    const title = data.title || '習慣改善トラッカー';
-    const options = {
-        body: data.body || '今日の習慣改善を記録しましょう！',
-        icon: 'icon-192.png',
-        badge: 'icon-192.png',
-        data: {
-            url: data.url || './index.html'
-        }
-    };
-
-    event.waitUntil(self.registration.showNotification(title, options));
-});
-
-// Notification Click Event
+// Notification Click Event (for PWA notification handling)
 self.addEventListener('notificationclick', (event) => {
     console.log('[Service Worker] Notification click Received.');
     event.notification.close();
@@ -135,13 +79,13 @@ self.addEventListener('notificationclick', (event) => {
             for (var i = 0; i < windowClients.length; i++) {
                 var client = windowClients[i];
                 // If so, just focus it.
-                if (client.url === event.notification.data.url && 'focus' in client) {
+                if (client.url === event.notification.data?.url && 'focus' in client) {
                     return client.focus();
                 }
             }
             // If not, then open the target URL in a new window/tab.
             if (clients.openWindow) {
-                return clients.openWindow(event.notification.data.url);
+                return clients.openWindow(event.notification.data?.url || './index.html');
             }
         })
     );
