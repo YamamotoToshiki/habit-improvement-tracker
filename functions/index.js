@@ -33,7 +33,7 @@ exports.sendScheduledNotifications = onSchedule(
     {
         schedule: "0 * * * *", // Every hour at minute 0
         timeZone: "Asia/Tokyo",
-        retryCount: 3,
+        // Note: retryCount removed to prevent duplicate notifications
     },
     async (event) => {
         logger.info("Starting scheduled notification check...");
