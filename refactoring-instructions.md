@@ -127,9 +127,9 @@ git checkout -b refactoring/comprehensive-cleanup
 
 | 項目 | 記録内容 | 保存先 |
 |------|---------|--------|
-| 機能動作確認 | 主要ユーザーフローの動作スクリーンショット | `logs/baseline/screenshots/` |
-| Lighthouse計測 | Performance, Accessibility, Best Practices, SEO スコア | `logs/baseline/lighthouse.json` |
-| コンソールエラー | エラー・警告の有無 | `logs/baseline/console.log` |
+| 機能動作確認 | 主要ユーザーフローの動作スクリーンショット | `baseline/screenshots/` |
+| Lighthouse計測 | Performance, Accessibility, Best Practices, SEO スコア | `baseline/lighthouse/` |
+| コンソールエラー | エラー・警告の有無 | `baseline/consolelogs/` |
 
 **主要ユーザーフロー（検証対象）:**
 1. アプリ起動・初期表示
