@@ -1,8 +1,17 @@
-// PWA Service Worker for Habit Improvement Tracker
-// Handles caching for offline support
+// =========================================
+// PWA Service Worker
+// =========================================
+// オフラインサポートのためのキャッシュを管理
+// =========================================
 
+// -----------------------------------------
+// キャッシュ設定
+// -----------------------------------------
 const CACHE_NAME = 'habit-tracker-v2';
+
+// キャッシュ対象アセット
 const ASSETS_TO_CACHE = [
+    // ローカルファイル
     './',
     './index.html',
     './style.css',
@@ -10,7 +19,8 @@ const ASSETS_TO_CACHE = [
     './translations.js',
     './firebase-config.js',
     './manifest.json',
-    // External libraries (CDNs)
+
+    // 外部ライブラリ (CDN)
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
     'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
     'https://cdn.jsdelivr.net/npm/flatpickr',
@@ -21,26 +31,30 @@ const ASSETS_TO_CACHE = [
     'https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js'
 ];
 
-// Install Event
+// -----------------------------------------
+// インストールイベント
+// -----------------------------------------
 self.addEventListener('install', (event) => {
-    console.log('[Service Worker] Installing Service Worker ...', event);
+    console.log('[Service Worker] インストール中...', event);
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('[Service Worker] Caching App Shell');
+                console.log('[Service Worker] アプリシェルをキャッシュ中');
                 return cache.addAll(ASSETS_TO_CACHE);
             })
     );
 });
 
-// Activate Event (Cleanup old caches)
+// -----------------------------------------
+// アクティベートイベント（古いキャッシュの削除）
+// -----------------------------------------
 self.addEventListener('activate', (event) => {
-    console.log('[Service Worker] Activating Service Worker ....', event);
+    console.log('[Service Worker] アクティベート中...', event);
     event.waitUntil(
         caches.keys().then((keyList) => {
             return Promise.all(keyList.map((key) => {
                 if (key !== CACHE_NAME) {
-                    console.log('[Service Worker] Removing old cache.', key);
+                    console.log('[Service Worker] 古いキャッシュを削除:', key);
                     return caches.delete(key);
                 }
             }));
@@ -49,9 +63,11 @@ self.addEventListener('activate', (event) => {
     return self.clients.claim();
 });
 
-// Fetch Event
+// -----------------------------------------
+// フェッチイベント（キャッシュ優先戦略）
+// -----------------------------------------
 self.addEventListener('fetch', (event) => {
-    // Skip cross-origin requests like Firebase Firestore/Auth for now to avoid CORS issues in simple cache
+    // Firebase関連のリクエストはキャッシュしない（CORS問題回避）
     if (event.request.url.indexOf('firestore.googleapis.com') !== -1 ||
         event.request.url.indexOf('googleapis.com') !== -1) {
         return;
@@ -60,6 +76,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
+                // キャッシュにあればそれを返す、なければネットワークから取得
                 if (response) {
                     return response;
                 }
@@ -68,22 +85,23 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Notification Click Event (for PWA notification handling)
+// -----------------------------------------
+// 通知クリックイベント（PWA通知ハンドリング）
+// -----------------------------------------
 self.addEventListener('notificationclick', (event) => {
-    console.log('[Service Worker] Notification click Received.');
+    console.log('[Service Worker] 通知クリックを受信');
     event.notification.close();
 
     event.waitUntil(
         clients.matchAll({ type: 'window' }).then(windowClients => {
-            // Check if there is already a window/tab open with the target URL
-            for (var i = 0; i < windowClients.length; i++) {
-                var client = windowClients[i];
-                // If so, just focus it.
+            // 既に開いているウィンドウ/タブがあればフォーカス
+            for (let i = 0; i < windowClients.length; i++) {
+                const client = windowClients[i];
                 if (client.url === event.notification.data?.url && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // If not, then open the target URL in a new window/tab.
+            // なければ新しいウィンドウ/タブで開く
             if (clients.openWindow) {
                 return clients.openWindow(event.notification.data?.url || './index.html');
             }
