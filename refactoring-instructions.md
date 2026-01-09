@@ -106,6 +106,7 @@
 - `README.md` - プロジェクト説明
 - `habit-tracker-requirements.md` - 要件定義
 - `refactoring-instructions.md` - 本ファイル
+- `baseline/` - ベースラインディレクトリ
 - `logs/` - ログディレクトリ
 - `node_modules/` - 依存モジュール
 - `package-lock.json` - パッケージロック
