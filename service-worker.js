@@ -1,17 +1,17 @@
 // =========================================
 // PWA Service Worker
 // =========================================
-// ƒIƒtƒ‰ƒCƒ“ƒTƒ|[ƒg‚Ì‚½‚ß‚ÌƒLƒƒƒbƒVƒ…‚ðŠÇ—
+// ã‚ªãƒ•ãƒ©ã‚¤ãƒ³ã‚µãƒãƒ¼ãƒˆã®ãŸã‚ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ç®¡ç†
 // =========================================
 
 // -----------------------------------------
-// ƒLƒƒƒbƒVƒ…Ý’è
+// ã‚­ãƒ£ãƒƒã‚·ãƒ¥è¨­å®š
 // -----------------------------------------
 const CACHE_NAME = 'habit-tracker-v2';
 
-// ƒLƒƒƒbƒVƒ…‘ÎÛƒAƒZƒbƒg
+// ã‚­ãƒ£ãƒƒã‚·ãƒ¥å¯¾è±¡ã‚¢ã‚»ãƒƒãƒˆ
 const ASSETS_TO_CACHE = [
-    // ƒ[ƒJƒ‹ƒtƒ@ƒCƒ‹
+    // ãƒ­ãƒ¼ã‚«ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«
     './',
     './index.html',
     './style.css',
@@ -20,7 +20,7 @@ const ASSETS_TO_CACHE = [
     './firebase-config.js',
     './manifest.json',
 
-    // ŠO•”ƒ‰ƒCƒuƒ‰ƒŠ (CDN)
+    // å¤–éƒ¨ãƒ©ã‚¤ãƒ–ãƒ©ãƒª (CDN)
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
     'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
     'https://cdn.jsdelivr.net/npm/flatpickr',
@@ -32,29 +32,29 @@ const ASSETS_TO_CACHE = [
 ];
 
 // -----------------------------------------
-// ƒCƒ“ƒXƒg[ƒ‹ƒCƒxƒ“ƒg
+// ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã‚¤ãƒ™ãƒ³ãƒˆ
 // -----------------------------------------
 self.addEventListener('install', (event) => {
-    console.log('[Service Worker] ƒCƒ“ƒXƒg[ƒ‹’†...', event);
+    console.log('[Service Worker] ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ä¸­...', event);
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('[Service Worker] ƒAƒvƒŠƒVƒFƒ‹‚ðƒLƒƒƒbƒVƒ…’†');
+                console.log('[Service Worker] ã‚¢ãƒ—ãƒªã‚·ã‚§ãƒ«ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥ä¸­');
                 return cache.addAll(ASSETS_TO_CACHE);
             })
     );
 });
 
 // -----------------------------------------
-// ƒAƒNƒeƒBƒx[ƒgƒCƒxƒ“ƒgiŒÃ‚¢ƒLƒƒƒbƒVƒ…‚Ìíœj
+// ã‚¢ã‚¯ãƒ†ã‚£ãƒ™ãƒ¼ãƒˆã‚¤ãƒ™ãƒ³ãƒˆï¼ˆå¤ã„ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®å‰Šé™¤ï¼‰
 // -----------------------------------------
 self.addEventListener('activate', (event) => {
-    console.log('[Service Worker] ƒAƒNƒeƒBƒx[ƒg’†...', event);
+    console.log('[Service Worker] ã‚¢ã‚¯ãƒ†ã‚£ãƒ™ãƒ¼ãƒˆä¸­...', event);
     event.waitUntil(
         caches.keys().then((keyList) => {
             return Promise.all(keyList.map((key) => {
                 if (key !== CACHE_NAME) {
-                    console.log('[Service Worker] ŒÃ‚¢ƒLƒƒƒbƒVƒ…‚ðíœ:', key);
+                    console.log('[Service Worker] å¤ã„ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’å‰Šé™¤:', key);
                     return caches.delete(key);
                 }
             }));
@@ -64,10 +64,10 @@ self.addEventListener('activate', (event) => {
 });
 
 // -----------------------------------------
-// ƒtƒFƒbƒ`ƒCƒxƒ“ƒgiƒLƒƒƒbƒVƒ…—Dæí—ªj
+// ãƒ•ã‚§ãƒƒãƒã‚¤ãƒ™ãƒ³ãƒˆï¼ˆã‚­ãƒ£ãƒƒã‚·ãƒ¥å„ªå…ˆæˆ¦ç•¥ï¼‰
 // -----------------------------------------
 self.addEventListener('fetch', (event) => {
-    // FirebaseŠÖ˜A‚ÌƒŠƒNƒGƒXƒg‚ÍƒLƒƒƒbƒVƒ…‚µ‚È‚¢iCORS–â‘è‰ñ”ðj
+    // Firebaseé–¢é€£ã®ãƒªã‚¯ã‚¨ã‚¹ãƒˆã¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã—ãªã„ï¼ˆCORSå•é¡Œå›žé¿ï¼‰
     if (event.request.url.indexOf('firestore.googleapis.com') !== -1 ||
         event.request.url.indexOf('googleapis.com') !== -1) {
         return;
@@ -76,7 +76,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
-                // ƒLƒƒƒbƒVƒ…‚É‚ ‚ê‚Î‚»‚ê‚ð•Ô‚·A‚È‚¯‚ê‚Îƒlƒbƒgƒ[ƒN‚©‚çŽæ“¾
+                // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«ã‚ã‚Œã°ãã‚Œã‚’è¿”ã™ã€ãªã‘ã‚Œã°ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‹ã‚‰å–å¾—
                 if (response) {
                     return response;
                 }
@@ -86,22 +86,22 @@ self.addEventListener('fetch', (event) => {
 });
 
 // -----------------------------------------
-// ’Ê’mƒNƒŠƒbƒNƒCƒxƒ“ƒgiPWA’Ê’mƒnƒ“ƒhƒŠƒ“ƒOj
+// é€šçŸ¥ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆï¼ˆPWAé€šçŸ¥ãƒãƒ³ãƒ‰ãƒªãƒ³ã‚°ï¼‰
 // -----------------------------------------
 self.addEventListener('notificationclick', (event) => {
-    console.log('[Service Worker] ’Ê’mƒNƒŠƒbƒN‚ðŽóM');
+    console.log('[Service Worker] é€šçŸ¥ã‚¯ãƒªãƒƒã‚¯ã‚’å—ä¿¡');
     event.notification.close();
 
     event.waitUntil(
         clients.matchAll({ type: 'window' }).then(windowClients => {
-            // Šù‚ÉŠJ‚¢‚Ä‚¢‚éƒEƒBƒ“ƒhƒE/ƒ^ƒu‚ª‚ ‚ê‚ÎƒtƒH[ƒJƒX
+            // æ—¢ã«é–‹ã„ã¦ã„ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦/ã‚¿ãƒ–ãŒã‚ã‚Œã°ãƒ•ã‚©ãƒ¼ã‚«ã‚¹
             for (let i = 0; i < windowClients.length; i++) {
                 const client = windowClients[i];
                 if (client.url === event.notification.data?.url && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // ‚È‚¯‚ê‚ÎV‚µ‚¢ƒEƒBƒ“ƒhƒE/ƒ^ƒu‚ÅŠJ‚­
+            // ãªã‘ã‚Œã°æ–°ã—ã„ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦/ã‚¿ãƒ–ã§é–‹ã
             if (clients.openWindow) {
                 return clients.openWindow(event.notification.data?.url || './index.html');
             }

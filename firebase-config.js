@@ -1,9 +1,9 @@
 // =========================================
-// Firebase İ’èE‰Šú‰»
+// Firebase è¨­å®šãƒ»åˆæœŸåŒ–
 // =========================================
 
 // -----------------------------------------
-// Firebase SDK ƒCƒ“ƒ|[ƒg
+// Firebase SDK ã‚¤ãƒ³ãƒãƒ¼ãƒˆ
 // -----------------------------------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore, deleteField } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -11,7 +11,7 @@ import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } fr
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js";
 
 // -----------------------------------------
-// Firebase ƒvƒƒWƒFƒNƒgİ’è
+// Firebase ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆè¨­å®š
 // -----------------------------------------
 const firebaseConfig = {
     apiKey: "AIzaSyC2tsKeBheL6LOWhHwMvYBL4b89m0SVoFs",
@@ -22,34 +22,34 @@ const firebaseConfig = {
     appId: "1:175411542830:web:bed0aad530a153b88718bf"
 };
 
-// FCM Web Push —p VAPID ƒL[
-// æ“¾Œ³: Firebase Console > ƒvƒƒWƒFƒNƒgİ’è > Cloud Messaging > ƒEƒFƒuƒvƒbƒVƒ…Ø–¾‘
+// FCM Web Push ç”¨ VAPID ã‚­ãƒ¼
+// å–å¾—å…ƒ: Firebase Console > ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆè¨­å®š > Cloud Messaging > ã‚¦ã‚§ãƒ–ãƒ—ãƒƒã‚·ãƒ¥è¨¼æ˜æ›¸
 const VAPID_KEY = "BJppLOdKhn-xu1CMa2th8QGguAWYYucdTdvzfBgKGWICr2grMK2m7k0ISOdjI-zzBNSIh-6Y1PqTx16WZYPdQb8";
 
 // -----------------------------------------
-// Firebase ‰Šú‰»
+// Firebase åˆæœŸåŒ–
 // -----------------------------------------
 const app = initializeApp(firebaseConfig);
 
-// Firestore ƒf[ƒ^ƒx[ƒX
+// Firestore ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹
 const db = getFirestore(app);
 
 // Firebase Authentication
 const auth = getAuth(app);
 
-// Google ”FØƒvƒƒoƒCƒ_
+// Google èªè¨¼ãƒ—ãƒ­ãƒã‚¤ãƒ€
 const googleProvider = new GoogleAuthProvider();
 
-// Firebase Cloud Messagingi”ñ‘Î‰ƒuƒ‰ƒEƒU‚Å‚Ínullj
+// Firebase Cloud Messagingï¼ˆéå¯¾å¿œãƒ–ãƒ©ã‚¦ã‚¶ã§ã¯nullï¼‰
 let messaging = null;
 try {
     messaging = getMessaging(app);
 } catch (error) {
-    console.warn("‚±‚Ìƒuƒ‰ƒEƒU‚Å‚ÍFirebase Messaging‚ªƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ:", error);
+    console.warn("ã“ã®ãƒ–ãƒ©ã‚¦ã‚¶ã§ã¯Firebase MessagingãŒã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã›ã‚“:", error);
 }
 
 // -----------------------------------------
-// ƒGƒNƒXƒ|[ƒg
+// ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆ
 // -----------------------------------------
 export {
     app,
