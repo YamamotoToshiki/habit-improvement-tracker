@@ -1,45 +1,127 @@
 /**
- * Cloud Functions for Firebase - Habit Tracker Push Notifications
- * 
- * This function runs every hour and sends push notifications to users
- * whose notification time matches the current hour (JST).
+ * =========================================
+ * Cloud Functions - 習慣改善トラッカー
+ * =========================================
+ * プッシュ通知の定期送信とテスト送信を担当
+ * =========================================
  */
 
+// -----------------------------------------
+// 依存関係インポート
+// -----------------------------------------
 const { setGlobalOptions } = require("firebase-functions");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { onRequest } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
-const { getFirestore, Timestamp } = require("firebase-admin/firestore");
+const { getFirestore, Timestamp, FieldValue } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
 const logger = require("firebase-functions/logger");
 
-// Initialize Firebase Admin
+// -----------------------------------------
+// Firebase 初期化
+// -----------------------------------------
 initializeApp();
-
-// Set global options
 setGlobalOptions({ maxInstances: 10, region: "asia-northeast1" });
 
-// Get Firestore and Messaging instances
 const db = getFirestore();
 const messaging = getMessaging();
 
+// -----------------------------------------
+// 定数定義
+// -----------------------------------------
+const NOTIFICATION_DEFAULTS = {
+    title: "習慣改善トラッカー",
+    body: "今日の習慣改善を記録しましょう！",
+    url: "./index.html?view=record"
+};
+
+const NOTIFICATION_TEST = {
+    title: "習慣改善トラッカー（テスト）",
+    body: "これはテスト通知です。",
+    url: "./index.html?view=record"
+};
+
+// 無効なFCMトークンのエラーコード
+const INVALID_TOKEN_CODES = [
+    "messaging/invalid-registration-token",
+    "messaging/registration-token-not-registered"
+];
+
+// -----------------------------------------
+// ヘルパー関数: ユーザーのFCMトークンを取得
+// -----------------------------------------
+async function getUserFcmTokens(userId) {
+    const tokenDoc = await db.collection("userTokens").doc(userId).get();
+    if (!tokenDoc.exists) {
+        return null;
+    }
+    const tokenData = tokenDoc.data();
+    return tokenData.fcmTokens || [];
+}
+
+// -----------------------------------------
+// ヘルパー関数: 通知を送信
+// -----------------------------------------
+async function sendNotificationToTokens(fcmTokens, notificationData, experimentId = null) {
+    const invalidTokens = [];
+    const results = await Promise.all(
+        fcmTokens.map(async (fcmToken) => {
+            const message = {
+                token: fcmToken,
+                data: {
+                    title: notificationData.title,
+                    body: notificationData.body,
+                    url: notificationData.url,
+                    ...(experimentId && { experimentId })
+                }
+            };
+
+            try {
+                const response = await messaging.send(message);
+                logger.info(`通知送信成功: ${response}`);
+                return { success: true, token: fcmToken, messageId: response };
+            } catch (error) {
+                logger.error(`通知送信エラー: ${error.code}`);
+                if (INVALID_TOKEN_CODES.includes(error.code)) {
+                    invalidTokens.push(fcmToken);
+                }
+                return { success: false, token: fcmToken, error: error.code };
+            }
+        })
+    );
+
+    return { results, invalidTokens };
+}
+
+// -----------------------------------------
+// ヘルパー関数: 無効なトークンを削除
+// -----------------------------------------
+async function removeInvalidTokens(userId, invalidTokens) {
+    if (invalidTokens.length === 0) return;
+
+    logger.info(`ユーザー ${userId} の無効なトークン ${invalidTokens.length} 件を削除`);
+    await db.collection("userTokens").doc(userId).update({
+        fcmTokens: FieldValue.arrayRemove(...invalidTokens)
+    });
+}
+
+// -----------------------------------------
+// スケジュール関数: 定期通知送信
+// -----------------------------------------
 /**
- * Scheduled function that runs every hour to send push notifications.
- * Checks for active experiments with matching notification times
- * and sends notifications to those users.
- * 
- * Schedule: Every hour at minute 0 (JST timezone)
+ * 毎時0分に実行され、通知時刻が現在時刻と一致するユーザーに通知を送信
+ * タイムゾーン: Asia/Tokyo (JST)
  */
 exports.sendScheduledNotifications = onSchedule(
     {
-        schedule: "0 * * * *", // Every hour at minute 0
-        timeZone: "Asia/Tokyo",
-        // Note: retryCount removed to prevent duplicate notifications
+        schedule: "0 * * * *",
+        timeZone: "Asia/Tokyo"
     },
     async (event) => {
-        logger.info("Starting scheduled notification check...");
+        logger.info("定期通知チェック開始...");
 
         try {
-            // Get current hour in JST
+            // 現在時刻（JST）を取得
             const now = new Date();
             const jstHour = now.toLocaleString("en-US", {
                 timeZone: "Asia/Tokyo",
@@ -47,214 +129,133 @@ exports.sendScheduledNotifications = onSchedule(
                 hour12: false,
             });
             const currentHour = jstHour.padStart(2, "0");
+            logger.info(`現在時刻 (JST): ${currentHour}:00`);
 
-            logger.info(`Current hour (JST): ${currentHour}:00`);
-
-            // Query for active experiments with matching notification time
-            const experimentsRef = db.collection("experiments");
-            const activeExperimentsQuery = experimentsRef
-                .where("endAt", ">", Timestamp.now());
-
-            const experimentsSnapshot = await activeExperimentsQuery.get();
+            // アクティブな実験を取得
+            const experimentsSnapshot = await db.collection("experiments")
+                .where("endAt", ">", Timestamp.now())
+                .get();
 
             if (experimentsSnapshot.empty) {
-                logger.info("No active experiments found.");
+                logger.info("アクティブな実験がありません");
                 return;
             }
 
-            logger.info(`Found ${experimentsSnapshot.size} active experiments.`);
+            logger.info(`アクティブな実験: ${experimentsSnapshot.size} 件`);
 
-            // Process each experiment
-            const notificationPromises = [];
+            // 各実験を処理
+            let notificationCount = 0;
 
             for (const experimentDoc of experimentsSnapshot.docs) {
                 const experiment = experimentDoc.data();
-                const notificationTime = experiment.notificationTime; // Format: "HH:MM"
+                const notificationTime = experiment.notificationTime;
 
-                if (!notificationTime) {
+                if (!notificationTime) continue;
+
+                // 通知時刻が現在時刻と一致するか確認
+                const notifHour = notificationTime.split(":")[0];
+                if (notifHour !== currentHour) continue;
+
+                const userId = experiment.userId;
+                logger.info(`通知時刻一致: ユーザー ${userId}`);
+
+                // FCMトークンを取得
+                const fcmTokens = await getUserFcmTokens(userId);
+                if (!fcmTokens || fcmTokens.length === 0) {
+                    logger.warn(`FCMトークンなし: ユーザー ${userId}`);
                     continue;
                 }
 
-                // Extract hour from notification time
-                const notifHour = notificationTime.split(":")[0];
+                // 今日すでに送信済みか確認
+                const todayStart = new Date();
+                todayStart.setHours(0, 0, 0, 0);
+                const logDocId = `${userId}_${todayStart.toISOString().split("T")[0]}`;
+                const logDoc = await db.collection("notificationLogs").doc(logDocId).get();
 
-                // Check if current hour matches notification hour
-                if (notifHour === currentHour) {
-                    const userId = experiment.userId;
-                    logger.info(`Notification time match for user: ${userId}`);
-
-                    // Get user's FCM tokens (supports multiple devices)
-                    const tokenDoc = await db.collection("userTokens").doc(userId).get();
-
-                    if (!tokenDoc.exists) {
-                        logger.warn(`No FCM tokens found for user: ${userId}`);
-                        continue;
-                    }
-
-                    const tokenData = tokenDoc.data();
-                    const fcmTokens = tokenData.fcmTokens || [];
-
-                    if (fcmTokens.length === 0) {
-                        logger.warn(`No FCM tokens available for user: ${userId}`);
-                        continue;
-                    }
-
-                    logger.info(`Sending notification to ${fcmTokens.length} device(s) for user: ${userId}`);
-
-                    // Check if notification was already sent today
-                    const todayStart = new Date();
-                    todayStart.setHours(0, 0, 0, 0);
-
-                    const notificationLogRef = db.collection("notificationLogs")
-                        .doc(`${userId}_${todayStart.toISOString().split("T")[0]}`);
-
-                    const logDoc = await notificationLogRef.get();
-                    if (logDoc.exists) {
-                        logger.info(`Notification already sent today for user: ${userId}`);
-                        continue;
-                    }
-
-                    // Send notification to all tokens (data-only to prevent duplicate notifications)
-                    const invalidTokens = [];
-                    const sendPromises = fcmTokens.map(async (fcmToken) => {
-                        const message = {
-                            token: fcmToken,
-                            // Use data-only message to let service worker handle notification display
-                            // This prevents browser from auto-showing notification
-                            data: {
-                                title: "習慣改善トラッカー",
-                                body: "今日の習慣改善を記録しましょう！",
-                                url: "./index.html?view=record",
-                                experimentId: experimentDoc.id,
-                            },
-                        };
-
-                        try {
-                            const response = await messaging.send(message);
-                            logger.info(`Notification sent to device: ${response}`);
-                            return { success: true, token: fcmToken };
-                        } catch (error) {
-                            logger.error(`Error sending to token: ${error.code}`);
-                            // If token is invalid, mark for removal
-                            if (error.code === "messaging/invalid-registration-token" ||
-                                error.code === "messaging/registration-token-not-registered") {
-                                invalidTokens.push(fcmToken);
-                            }
-                            return { success: false, token: fcmToken, error: error.code };
-                        }
-                    });
-
-                    const results = await Promise.all(sendPromises);
-                    const successCount = results.filter(r => r.success).length;
-
-                    // Remove invalid tokens
-                    if (invalidTokens.length > 0) {
-                        logger.info(`Removing ${invalidTokens.length} invalid token(s) for user: ${userId}`);
-                        const { FieldValue } = require("firebase-admin/firestore");
-                        await db.collection("userTokens").doc(userId).update({
-                            fcmTokens: FieldValue.arrayRemove(...invalidTokens)
-                        });
-                    }
-
-                    // Log the notification
-                    await notificationLogRef.set({
-                        userId: userId,
-                        experimentId: experimentDoc.id,
-                        sentAt: Timestamp.now(),
-                        success: successCount > 0,
-                        deviceCount: fcmTokens.length,
-                        successCount: successCount,
-                    });
-
-                    notificationPromises.push(Promise.resolve());
+                if (logDoc.exists) {
+                    logger.info(`本日送信済み: ユーザー ${userId}`);
+                    continue;
                 }
+
+                // 通知送信
+                logger.info(`通知送信: ${fcmTokens.length} デバイス`);
+                const { results, invalidTokens } = await sendNotificationToTokens(
+                    fcmTokens,
+                    NOTIFICATION_DEFAULTS,
+                    experimentDoc.id
+                );
+
+                // 無効なトークンを削除
+                await removeInvalidTokens(userId, invalidTokens);
+
+                // 送信ログを記録
+                const successCount = results.filter(r => r.success).length;
+                await db.collection("notificationLogs").doc(logDocId).set({
+                    userId,
+                    experimentId: experimentDoc.id,
+                    sentAt: Timestamp.now(),
+                    success: successCount > 0,
+                    deviceCount: fcmTokens.length,
+                    successCount
+                });
+
+                notificationCount++;
             }
 
-            // Wait for all notifications to complete
-            await Promise.all(notificationPromises);
-
-            logger.info(`Notification check completed. Sent ${notificationPromises.length} notifications.`);
+            logger.info(`通知チェック完了: ${notificationCount} 件送信`);
 
         } catch (error) {
-            logger.error("Error in sendScheduledNotifications:", error);
+            logger.error("定期通知エラー:", error);
             throw error;
         }
     }
 );
 
+// -----------------------------------------
+// HTTP関数: テスト通知送信（開発用）
+// -----------------------------------------
 /**
- * Optional: HTTP endpoint to manually trigger notifications (for testing)
- * Can be removed in production.
+ * 手動でテスト通知を送信するためのHTTPエンドポイント
+ * 本番環境では削除を推奨
  */
-const { onRequest } = require("firebase-functions/v2/https");
-
 exports.testNotification = onRequest(
     { region: "asia-northeast1" },
     async (req, res) => {
-        // Only allow POST requests
+        // POSTリクエストのみ許可
         if (req.method !== "POST") {
             res.status(405).send("Method Not Allowed");
             return;
         }
 
         const { userId } = req.body;
-
         if (!userId) {
             res.status(400).send("userId is required");
             return;
         }
 
         try {
-            // Get user's FCM tokens (supports multiple devices)
-            const tokenDoc = await db.collection("userTokens").doc(userId).get();
-
-            if (!tokenDoc.exists) {
+            // FCMトークンを取得
+            const fcmTokens = await getUserFcmTokens(userId);
+            if (!fcmTokens || fcmTokens.length === 0) {
                 res.status(404).send("No FCM tokens found for user");
                 return;
             }
 
-            const tokenData = tokenDoc.data();
-            const fcmTokens = tokenData.fcmTokens || [];
+            logger.info(`テスト通知送信: ${fcmTokens.length} デバイス`);
 
-            if (fcmTokens.length === 0) {
-                res.status(404).send("No FCM tokens available for user");
-                return;
-            }
-
-            logger.info(`Sending test notification to ${fcmTokens.length} device(s)`);
-
-            // Send test notification to all tokens (data-only to prevent duplicate notifications)
-            const results = await Promise.all(fcmTokens.map(async (fcmToken) => {
-                const message = {
-                    token: fcmToken,
-                    // Use data-only message to let service worker handle notification display
-                    data: {
-                        title: "習慣改善トラッカー（テスト）",
-                        body: "これはテスト通知です。",
-                        url: "./index.html?view=record",
-                    },
-                };
-
-                try {
-                    const response = await messaging.send(message);
-                    logger.info(`Test notification sent: ${response}`);
-                    return { success: true, messageId: response };
-                } catch (error) {
-                    logger.error(`Error sending test notification: ${error.message}`);
-                    return { success: false, error: error.message };
-                }
-            }));
-
+            // 通知送信
+            const { results } = await sendNotificationToTokens(fcmTokens, NOTIFICATION_TEST);
             const successCount = results.filter(r => r.success).length;
+
             res.status(200).json({
                 success: successCount > 0,
                 deviceCount: fcmTokens.length,
-                successCount: successCount,
-                results: results
+                successCount,
+                results
             });
 
         } catch (error) {
-            logger.error("Error sending test notification:", error);
+            logger.error("テスト通知エラー:", error);
             res.status(500).json({ success: false, error: error.message });
         }
     }
