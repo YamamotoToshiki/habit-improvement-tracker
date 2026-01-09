@@ -1,5 +1,5 @@
 /* =========================================
-   1. CSS Variables & Theming
+   1. CSS変数・テーマ設定
    ========================================= */
 :root {
     /* Key Colors */
@@ -102,7 +102,7 @@
 }
 
 /* =========================================
-   2. Global Reset & Base Styles
+   2. グローバルリセット・基本スタイル
    ========================================= */
 * {
     box-sizing: border-box;
@@ -207,7 +207,7 @@ button {
 }
 
 /* =========================================
-   3. Layout & Container
+   3. レイアウト・コンテナ
    ========================================= */
 .container {
     width: 100%;
@@ -278,7 +278,7 @@ button {
 }
 
 /* =========================================
-   4. Header & Navigation - Enhanced with glassmorphism
+   4. ヘッダー・ナビゲーション
    ========================================= */
 #app-header {
     background: var(--gradient-card);
@@ -395,7 +395,7 @@ button {
 }
 
 /* =========================================
-   5. Components (Forms, Buttons, Cards)
+   5. コンポーネント（フォーム・ボタン・カード）
    ========================================= */
 
 /* Cards - Enhanced with glassmorphism */
@@ -968,7 +968,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 }
 
 /* =========================================
-   6. View Specific Styles
+   6. ビュー固有スタイル
    ========================================= */
 
 /* Loading View - Enhanced */
@@ -1413,7 +1413,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 }
 
 /* =========================================
-   7. Modals & Tooltips
+   7. モーダル・ツールチップ
    ========================================= */
 
 /* Modal - with backdrop blur */
@@ -1506,7 +1506,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
    or rely on the text below input. */
 
 /* =========================================
-   8. Chart.js Customization (Canvas)
+   8. Chart.js カスタマイズ
    ========================================= */
 canvas {
     max-width: 100%;
@@ -1527,7 +1527,7 @@ canvas {
 }
 
 /* =========================================
-   9. Validation Feedback
+   9. バリデーションフィードバック
    ========================================= */
 .input-error {
     border-color: var(--color-danger) !important;
@@ -1560,7 +1560,7 @@ canvas {
 }
 
 /* =========================================
-   10. Calendar Styles
+   10. カレンダースタイル
    ========================================= */
 .day-success {
     background-color: rgba(16, 185, 129, 0.2) !important;
