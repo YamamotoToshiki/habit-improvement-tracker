@@ -42,6 +42,8 @@
     --font-size-sm: 14px;
     --font-size-lg: 18px;
     --font-size-xl: 24px;
+    --font-size-xxl: 28px;
+    --font-size-heading: 20px;
 
     /* Borders & Radius */
     --border-radius-sm: 4px;
@@ -163,12 +165,12 @@ h1 {
 }
 
 h2 {
-    font-size: 20px;
+    font-size: var(--font-size-heading);
     color: var(--color-tertiary);
 }
 
 h2 i {
-    margin-right: 8px;
+    margin-right: var(--space-sm);
 }
 
 a {
@@ -256,7 +258,7 @@ button {
 }
 
 .app-title {
-    font-size: 20px;
+    font-size: var(--font-size-heading);
     color: var(--color-tertiary);
     margin-bottom: 0;
     font-weight: 700;
@@ -320,7 +322,7 @@ button {
     }
 
     .app-title {
-        font-size: 20px;
+        font-size: var(--font-size-heading);
         text-align: center;
         width: 100%;
     }
@@ -340,7 +342,7 @@ button {
     }
 
     .nav-btn i {
-        font-size: 20px;
+        font-size: var(--font-size-heading);
     }
 
     .nav-btn .nav-text {
@@ -1051,7 +1053,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 }
 
 .login-title {
-    font-size: 28px;
+    font-size: var(--font-size-xxl);
     background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
