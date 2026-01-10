@@ -193,18 +193,12 @@ button {
     display: none !important;
 }
 
-.text-center {
-    text-align: center;
-}
 
 .text-warning {
     color: var(--color-warning) !important;
     font-weight: 600;
 }
 
-.mt-md {
-    margin-top: var(--space-md);
-}
 
 /* =========================================
    3. レイアウト・コンテナ
@@ -235,47 +229,7 @@ button {
     }
 }
 
-/* Success pulse animation for feedback */
-@keyframes successPulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
-    }
 
-    70% {
-        box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-    }
-}
-
-.success-pulse {
-    animation: successPulse 0.6s ease-out;
-}
-
-/* Shake animation for errors */
-@keyframes shake {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    20%,
-    60% {
-        transform: translateX(-5px);
-    }
-
-    40%,
-    80% {
-        transform: translateX(5px);
-    }
-}
-
-.shake {
-    animation: shake 0.4s ease-out;
-}
 
 /* =========================================
    4. ヘッダー・ナビゲーション
@@ -839,24 +793,6 @@ button:disabled {
     user-select: none;
 }
 
-/* Legacy checkbox support (for non-toggle checkboxes) */
-.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-}
-
-.checkbox-group label {
-    margin-bottom: 0;
-    cursor: pointer;
-}
-
-input[type="checkbox"]:not(.toggle-switch input) {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    accent-color: var(--color-primary);
-}
 
 /* Custom Sliders - Modern styling */
 .slider-group {
@@ -1202,10 +1138,6 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     transition: opacity var(--transition-base);
 }
 
-.disabled-section.active {
-    opacity: 1;
-    pointer-events: auto;
-}
 
 /* Results View */
 .results-header {
@@ -1215,16 +1147,6 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     margin-bottom: var(--space-md);
 }
 
-.icon-btn {
-    background: none;
-    color: var(--text-secondary);
-    font-size: 24px;
-    padding: var(--space-sm);
-}
-
-.icon-btn:hover {
-    color: var(--color-primary);
-}
 
 /* Record View Section (Date Input + Button) */
 .record-view-section {
@@ -1259,13 +1181,6 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     }
 }
 
-.calendar-container {
-    background-color: var(--bg-card);
-    padding: var(--space-md);
-    border-radius: var(--border-radius-md);
-    margin-bottom: var(--space-lg);
-    box-shadow: var(--shadow-sm);
-}
 
 /* Accordion for Charts & Library */
 .accordion-item {
