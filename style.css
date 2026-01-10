@@ -1065,7 +1065,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     width: 100%;
     padding: 14px 24px;
     background-color: #4285F4;
-    color: var(--text-btn);
+    color: #FFFFFF;
     font-size: var(--font-size-base);
     font-weight: 600;
     border: none;
