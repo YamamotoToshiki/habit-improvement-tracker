@@ -523,11 +523,9 @@ textarea {
 .btn-secondary,
 .btn-danger {
     padding: 14px 28px;
-    border: none;
     border-radius: var(--border-radius-md);
     font-weight: 600;
     font-size: var(--font-size-base);
-    cursor: pointer;
     transition: all var(--transition-base);
     display: inline-flex;
     align-items: center;
