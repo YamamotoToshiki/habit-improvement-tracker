@@ -380,6 +380,9 @@ button {
 }
 
 .form-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
     font-weight: 500;
     color: var(--text-secondary);
 }
@@ -442,11 +445,6 @@ button {
     border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
-.form-group label {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-}
 
 /* Enhanced Input Styles with Focus Animation */
 input[type="text"],
@@ -1245,6 +1243,17 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     padding: var(--space-md);
     background-color: var(--bg-main);
     animation: slideDown 0.3s ease-out;
+    /* Chart container sizing for proper Chart.js rendering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 700px;
+}
+
+@media (max-width: 767px) {
+    .accordion-content {
+        height: 400px;
+    }
 }
 
 /* Library View */
@@ -1427,19 +1436,6 @@ canvas {
     max-width: 100%;
 }
 
-/* Chart container sizing for proper Chart.js rendering */
-.accordion-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 700px;
-}
-
-@media (max-width: 767px) {
-    .accordion-content {
-        height: 400px;
-    }
-}
 
 /* =========================================
    9. バリデーションフィードバック
