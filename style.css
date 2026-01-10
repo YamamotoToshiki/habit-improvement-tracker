@@ -3,12 +3,12 @@
    ========================================= */
 :root {
     /* Key Colors */
-    --color-primary: #00A3BF;
     /* cyan600 */
-    --color-secondary: #2BC8E4;
+    --color-primary: #00A3BF;
     /* cyan400 */
-    --color-tertiary: #008299;
+    --color-secondary: #2BC8E4;
     /* cyan800 */
+    --color-tertiary: #008299;
 
     /* Functional Colors */
     --color-success: #10B981;
@@ -377,7 +377,6 @@ button {
 .form-group {
     margin-bottom: var(--space-lg);
     position: relative;
-    /* For tooltips */
 }
 
 .form-group label {
@@ -446,7 +445,7 @@ button {
 .form-group label {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-sm);
 }
 
 /* Enhanced Input Styles with Focus Animation */
@@ -763,7 +762,7 @@ button:disabled {
     width: 26px;
     left: 3px;
     bottom: 3px;
-    background: white;
+    background: #FFFFFF;
     transition: all var(--transition-base);
     border-radius: 50%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -833,7 +832,7 @@ input[type="range"]::-webkit-slider-thumb {
     height: 24px;
     border-radius: 50%;
     background: var(--gradient-primary);
-    border: 3px solid white;
+    border: 3px solid #FFFFFF;
     box-shadow: var(--shadow-md), 0 0 0 1px rgba(0, 163, 191, 0.2);
     cursor: pointer;
     margin-top: -8px;
@@ -869,7 +868,7 @@ input[type="range"]::-moz-range-thumb {
     height: 24px;
     border-radius: 50%;
     background: var(--gradient-primary);
-    border: 3px solid white;
+    border: 3px solid #FFFFFF;
     box-shadow: var(--shadow-md), 0 0 0 1px rgba(0, 163, 191, 0.2);
     cursor: pointer;
     transition: all var(--transition-base);
@@ -898,7 +897,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     margin: 0 auto;
     border-radius: 50%;
     background: var(--gradient-primary);
-    color: white;
+    color: #FFFFFF;
     font-weight: 700;
     font-size: var(--font-size-lg);
     box-shadow: var(--shadow-md);
@@ -1453,7 +1452,7 @@ canvas {
 .tooltip-error {
     position: absolute;
     background-color: var(--color-danger);
-    color: white;
+    color: #FFFFFF;
     padding: var(--space-xs) var(--space-sm);
     border-radius: var(--border-radius-sm);
     font-size: var(--font-size-xs);
