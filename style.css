@@ -196,12 +196,10 @@ button {
     display: none !important;
 }
 
-
 .text-warning {
     color: var(--color-warning) !important;
     font-weight: 600;
 }
-
 
 /* =========================================
    3. レイアウト・コンテナ
@@ -231,8 +229,6 @@ button {
         transform: translateY(0) scale(1);
     }
 }
-
-
 
 /* =========================================
    4. ヘッダー・ナビゲーション
@@ -444,7 +440,6 @@ button {
     color: var(--color-success);
     border: 1px solid rgba(16, 185, 129, 0.3);
 }
-
 
 /* Enhanced Input Styles with Focus Animation */
 input[type="text"],
@@ -791,7 +786,6 @@ button:disabled {
     user-select: none;
 }
 
-
 /* Custom Sliders - Modern styling */
 .slider-group {
     display: flex;
@@ -1020,12 +1014,10 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 }
 
 @keyframes float {
-
     0%,
     100% {
         transform: translateY(0) rotate(0deg);
     }
-
     50% {
         transform: translateY(-30px) rotate(5deg);
     }
@@ -1136,7 +1128,6 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     transition: opacity var(--transition-base);
 }
 
-
 /* Results View */
 .results-header {
     display: flex;
@@ -1144,7 +1135,6 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     align-items: center;
     margin-bottom: var(--space-md);
 }
-
 
 /* Record View Section (Date Input + Button) */
 .record-view-section {
@@ -1178,7 +1168,6 @@ input[type="range"]:disabled::-webkit-slider-thumb {
         width: 100%;
     }
 }
-
 
 /* Accordion for Charts & Library */
 .accordion-item {
@@ -1329,7 +1318,6 @@ input[type="range"]:disabled::-webkit-slider-thumb {
         opacity: 0;
         transform: translateY(-10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1435,7 +1423,6 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 canvas {
     max-width: 100%;
 }
-
 
 /* =========================================
    9. バリデーションフィードバック
