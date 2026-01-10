@@ -30,6 +30,7 @@
     --text-btn: #FFFFFF;
 
     /* Spacing */
+    --space-xxs: 2px;
     --space-xs: 4px;
     --space-sm: 8px;
     --space-md: 16px;
@@ -39,6 +40,7 @@
     /* Typography */
     --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-size-base: 16px;
+    --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-lg: 18px;
     --font-size-xl: 24px;
@@ -61,9 +63,11 @@
     --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #00A3BF 0%, #2BC8E4 100%);
-    --gradient-bg: linear-gradient(180deg, #F0F9FA 0%, #FFFFFF 50%, #F0F9FA 100%);
+    --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    --gradient-bg: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-main) 50%, var(--bg-secondary) 100%);
     --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 249, 250, 0.9) 100%);
+    --gradient-fab-secondary: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+    --gradient-fab-loading: linear-gradient(135deg, #7FB3BD 0%, #9DD4E4 100%);
 }
 
 /* Dark Mode Overrides */
@@ -71,10 +75,7 @@
     :root {
         /* Key Colors Adjusted */
         --color-primary: rgba(0, 163, 191, 0.9);
-        /* Opacity 0.9 */
-        /* Secondary stays #2BC8E4 */
         --color-tertiary: #00A3BF;
-        /* Lighter for dark mode */
 
         /* Background Colors */
         --bg-main: #0B1F24;
@@ -88,8 +89,8 @@
         --text-tertiary: #9CA3AF;
         --text-link: #2BC8E4;
         --text-btn: #0B1F24;
-        /* Dark text on bright buttons */
 
+        /* Dark text on bright buttons */
         --border-color: rgba(43, 200, 228, 0.2);
 
         /* Dark mode shadows */
@@ -98,7 +99,7 @@
         --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
 
         /* Dark mode gradients */
-        --gradient-bg: linear-gradient(180deg, #0B1F24 0%, #142B32 50%, #0B1F24 100%);
+        --gradient-bg: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-main) 50%, var(--bg-secondary) 100%);
         --gradient-card: linear-gradient(145deg, rgba(26, 57, 66, 0.9) 0%, rgba(20, 43, 50, 0.9) 100%);
     }
 }
@@ -115,7 +116,7 @@
 html {
     height: 100%;
     /* Solid color for iOS safe area and overscroll */
-    background-color: #F0F9FA;
+    background-color: var(--bg-secondary);
     background-image: var(--gradient-bg);
     background-attachment: fixed;
     /* Prevent overscroll bounce showing white */
@@ -127,7 +128,7 @@ body {
     font-size: var(--font-size-base);
     line-height: 1.6;
     /* Solid color fallback for iOS */
-    background-color: #F0F9FA;
+    background-color: var(--bg-secondary);
     background-image: var(--gradient-bg);
     background-attachment: fixed;
     color: var(--text-primary);
@@ -291,7 +292,7 @@ button {
 
 /* Ensure icons in nav buttons display correctly */
 .nav-btn i {
-    font-size: 16px;
+    font-size: var(--font-size-base);
     display: inline-block;
     width: 1em;
     text-align: center;
@@ -410,7 +411,7 @@ button {
 
 .form-section-title i {
     color: var(--color-primary);
-    font-size: 18px;
+    font-size: var(--font-size-lg);
 }
 
 /* Required/Optional Badges */
@@ -418,9 +419,9 @@ button {
 .optional::after {
     display: inline-flex;
     align-items: center;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
+    padding: var(--space-xxs) var(--space-sm);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-xs);
     font-weight: 600;
     margin-left: var(--space-sm);
     vertical-align: middle;
@@ -458,7 +459,7 @@ select {
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
-    padding: 14px var(--space-md);
+    padding: 14px 16px;
     background-color: var(--bg-input);
     border: 2px solid var(--border-color);
     border-radius: var(--border-radius-md);
@@ -655,7 +656,7 @@ button:disabled {
     background: var(--gradient-primary);
     color: var(--text-btn);
     border: none;
-    font-size: 24px;
+    font-size: var(--font-size-xl);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -675,7 +676,7 @@ button:disabled {
 }
 
 .fab i {
-    font-size: 24px;
+    font-size: var(--font-size-xl);
 }
 
 /* FAB Mobile - Larger touch target */
@@ -695,7 +696,7 @@ button:disabled {
 
 /* FAB Secondary (Danger) Style - for disabled notification */
 .fab.fab-secondary {
-    background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+    background: var(--gradient-fab-secondary);
     box-shadow: var(--shadow-lg), 0 0 20px rgba(239, 68, 68, 0.3);
 }
 
@@ -705,7 +706,7 @@ button:disabled {
 
 /* FAB Loading State - Grayed-out primary gradient */
 .fab.fab-loading {
-    background: linear-gradient(135deg, #7FB3BD 0%, #9DD4E4 100%);
+    background: var(--gradient-fab-loading);
     box-shadow: var(--shadow-lg), 0 0 20px rgba(127, 179, 189, 0.3);
     pointer-events: none;
     cursor: not-allowed;
@@ -808,7 +809,7 @@ input[type="range"] {
     margin: var(--space-md) 0;
     cursor: pointer;
     background: linear-gradient(to right, var(--color-primary) 0%, var(--border-color) 0%);
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     outline: none;
     transition: all var(--transition-base);
 }
@@ -820,7 +821,7 @@ input[type="range"]:hover {
 /* Webkit (Chrome, Safari) Track */
 input[type="range"]::-webkit-slider-runnable-track {
     height: 8px;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     background: transparent;
 }
 
@@ -851,14 +852,14 @@ input[type="range"]:active::-webkit-slider-thumb {
 /* Firefox Track */
 input[type="range"]::-moz-range-track {
     height: 8px;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     background: var(--border-color);
 }
 
 /* Firefox Progress (filled portion) */
 input[type="range"]::-moz-range-progress {
     height: 8px;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     background: var(--gradient-primary);
 }
 
@@ -1075,7 +1076,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     width: 100%;
     padding: 14px 24px;
     background-color: #4285F4;
-    color: #FFFFFF;
+    color: var(--text-btn);
     font-size: var(--font-size-base);
     font-weight: 600;
     border: none;
@@ -1095,7 +1096,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 }
 
 .btn-google-login i {
-    font-size: 18px;
+    font-size: var(--font-size-lg);
 }
 
 /* Logout Button in Header */
@@ -1120,7 +1121,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
 }
 
 .nav-btn-logout i {
-    font-size: 16px;
+    font-size: var(--font-size-base);
     display: inline-block;
     width: 1em;
     text-align: center;
@@ -1224,7 +1225,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     content: '\f078';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     position: absolute;
     right: var(--space-md);
     top: 50%;
@@ -1294,7 +1295,7 @@ input[type="range"]:disabled::-webkit-slider-thumb {
     content: '\f078';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     color: var(--color-primary);
     transition: transform var(--transition-base);
 }
@@ -1453,9 +1454,9 @@ canvas {
     position: absolute;
     background-color: var(--color-danger);
     color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-xs);
     bottom: 100%;
     left: 0;
     white-space: nowrap;
